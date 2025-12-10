@@ -70,6 +70,11 @@ console() {
     echo -e "$@" >&3
 }
 
+# Function to read input from user (preserves original stdin)
+console_read() {
+    read "$@" <&3
+}
+
 # Redirect all output to log file
 exec 1>>"$LOG_FILE" 2>&1
 
@@ -114,9 +119,24 @@ show_intro() {
         sleep 0.2
     done
     console ""
-    console ""
+    
+    # Clear the animation and show system info
+    clear >&3
     
     # Show system info
+    show_banner
+}
+
+# 🖼️ CLEAN BANNER
+show_banner() {
+    clear >&3
+    console ""
+    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_3}  ║                     ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}                       ║${RESET}"
+    console "${GRADIENT_4}  ║               ${CYAN}Professional Server Management${GRADIENT_4}                    ║${RESET}"
+    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
+    console ""
     console "  ${YELLOW}╭─ SYSTEM INFORMATION ${GRAY}─────────────────────────────────────────${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
@@ -138,7 +158,7 @@ show_progress() {
     local filled=$((width * current / total))
     local empty=$((width - filled))
     
-    console -ne "\r  ${BLUE}[${RESET}"
+    console -ne "\r  ${BLUE}[${RESET}" >&3
     printf "%0.s█" $(seq 1 $filled) >&3
     printf "%0.s░" $(seq 1 $empty) >&3
     console -ne "${BLUE}] ${GREEN}${percent}%${RESET} ${GRAY}(Step ${current}/${total})${RESET}" >&3
@@ -254,6 +274,7 @@ quick_execute() {
 
 # 🛡️ PROFESSIONAL ROOT CHECK
 check_requirements() {
+    console "\n"
     print_header_line
     console "  ${WHITE}🔍 SYSTEM REQUIREMENTS CHECK${RESET}"
     print_section_line
@@ -374,7 +395,7 @@ install_panel() {
     fi
     current_step=$((current_step + 1))
     
-    # 5. ADMIN ACCOUNT SETUP
+    # 5. ADMIN ACCOUNT SETUP (FIXED - SHOWS PROMPTS TO USER)
     show_progress $current_step $total_steps
     console "\n"
     print_header_line
@@ -383,9 +404,14 @@ install_panel() {
     console ""
     
     local admin_email admin_name admin_pass
+    # First, show the prompts to user
+    console "  ${BLUE}│${RESET} ${WHITE}Please enter admin credentials:${RESET}"
+    console ""
+    
+    # Get email
     while true; do
         console -ne "  ${BLUE}│${RESET} ${WHITE}📧 Admin Email Address: ${RESET}"
-        read -r admin_email
+        console_read -r admin_email
         if [[ "$admin_email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
             break
         else
@@ -393,15 +419,18 @@ install_panel() {
         fi
     done
     
+    # Get username
     console -ne "  ${BLUE}│${RESET} ${WHITE}👤 Admin Username: ${RESET}"
-    read -r admin_name
+    console_read -r admin_name
     
+    # Get password
     console -ne "  ${BLUE}│${RESET} ${WHITE}🔑 Admin Password: ${RESET}"
-    read -s -r admin_pass
+    console_read -s -r admin_pass
     console ""
     
+    # Confirm password
     console -ne "  ${BLUE}│${RESET} ${WHITE}🔒 Confirm Password: ${RESET}"
-    read -s -r admin_pass_confirm
+    console_read -s -r admin_pass_confirm
     console ""
     
     if [ "$admin_pass" != "$admin_pass_confirm" ]; then
@@ -409,12 +438,13 @@ install_panel() {
         return 1
     fi
     
+    console "  ${GREEN}│${RESET} ${GREEN}✓ Credentials accepted${RESET}"
     print_footer_line
     
     execute_task "10" "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin" "pulse"
     current_step=$((current_step + 1))
     
-    # 6. PANEL URL SETUP
+    # 6. PANEL URL SETUP (FIXED - NOW ASKING FOR PANEL URL)
     show_progress $current_step $total_steps
     console "\n"
     print_header_line
@@ -422,16 +452,24 @@ install_panel() {
     console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
     console ""
     
-    console "  ${BLUE}│${RESET} ${WHITE}Enter your panel access URL:${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Enter your panel access URL or IP address:${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}Examples:${RESET}"
     console "  ${BLUE}│${RESET}   ${CYAN}• panel.yourdomain.com${RESET}"
     console "  ${BLUE}│${RESET}   ${CYAN}• 192.168.1.100${RESET}"
     console "  ${BLUE}│${RESET}   ${CYAN}• server.yourhost.com${RESET}"
+    console "  ${BLUE}│${RESET}   ${CYAN}• localhost${RESET}"
     console ""
-    console -ne "  ${BLUE}│${RESET} ${GREEN}➤ ${WHITE}Panel URL/IP: ${RESET}"
-    read -r panel_host
-    print_footer_line
     
+    local panel_host=""
+    while [ -z "$panel_host" ]; do
+        console -ne "  ${BLUE}│${RESET} ${GREEN}➤ ${WHITE}Panel URL/IP: ${RESET}"
+        console_read -r panel_host
+        if [ -z "$panel_host" ]; then
+            console "  ${RED}│${RESET} ${YELLOW}⚠ Please enter a valid URL or IP address${RESET}"
+        fi
+    done
+    
+    print_footer_line
     current_step=$((current_step + 1))
     
     # 7. FINALIZATION
@@ -440,6 +478,7 @@ install_panel() {
     current_step=$((current_step + 1))
     
     # INSTALLATION COMPLETE
+    show_progress $current_step $total_steps
     console "\n"
     print_header_line
     console "  ${GREEN}🎉 INSTALLATION COMPLETED SUCCESSFULLY!${RESET}"
@@ -457,6 +496,7 @@ install_panel() {
     print_section_line
     console "  ${BLUE}│${RESET} ${WHITE}🔗 PANEL ACCESS DETAILS${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Panel URL:${RESET} ${YELLOW}http://${panel_host}:8080${RESET}"
+    console "  ${BLUE}│${RESET} ${GRAY}├─ Alternative URL:${RESET} ${YELLOW}http://${ip_address}:8080${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ SFTP Port:${RESET} ${YELLOW}5657${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Admin User:${RESET} ${GREEN}${admin_name}${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Admin Email:${RESET} ${GREEN}${admin_email}${RESET}"
@@ -483,6 +523,7 @@ install_panel() {
     console "  ${BLUE}│${RESET} ${CYAN}2.${RESET} Login with your admin credentials"
     console "  ${BLUE}│${RESET} ${CYAN}3.${RESET} Configure your first server"
     console "  ${BLUE}│${RESET} ${CYAN}4.${RESET} Check firewall if ports are not accessible"
+    console "  ${BLUE}│${RESET} ${CYAN}5.${RESET} Default login: ${GREEN}${admin_name}${RESET} with your password"
     
     print_footer_line
     console ""
@@ -509,7 +550,7 @@ uninstall_panel() {
     console ""
     
     console -ne "  ${RED}│${RESET} ${WHITE}Type ${RED}CONFIRM${WHITE} to proceed: ${RESET}"
-    read -r confirmation
+    console_read -r confirmation
     
     if [ "$confirmation" != "CONFIRM" ]; then
         console "\n  ${GREEN}✓ Uninstallation cancelled${RESET}"
@@ -624,7 +665,7 @@ system_status() {
 #  🎮 PROFESSIONAL MAIN MENU
 # ==============================================================================
 main_menu() {
-    # Show KS Hosting intro first
+    # Show KS Hosting intro first (with animation)
     show_intro
     sleep 1
     
@@ -644,7 +685,7 @@ main_menu() {
         console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
         console -ne "  ${CYAN}│${RESET} ${WHITE}👉 Your choice [1-5]: ${RESET}"
         
-        read -r choice
+        console_read -r choice
         
         case $choice in
             1)
@@ -679,7 +720,7 @@ main_menu() {
         
         if [ "$choice" -ne 5 ]; then
             console "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
-            read -r
+            console_read
         fi
     done
 }
