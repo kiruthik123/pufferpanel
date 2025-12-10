@@ -99,17 +99,17 @@ print_task_line() {
 show_intro() {
     clear >&3
     console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
     console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
     console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
     console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
     console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
     console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
     console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
-    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║             ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}           ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════════════════════╝${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ║               ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}              ║${RESET}"
+    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     
     # Show loading animation for 5 seconds
@@ -122,26 +122,22 @@ show_intro() {
     
     # Clear the animation and show system info
     clear >&3
-    
-    # Show system info
-    show_banner
 }
 
 # 🖼️ CLEAN BANNER
 show_banner() {
-    clear >&3
     console ""
     console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║           ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}          ║${RESET}"
-    console "${GRADIENT_3}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_4}  ║        ${CYAN}Professional Server Management${GRADIENT_4}        ║${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_3}  ║                     ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}                       ║${RESET}"
+    console "${GRADIENT_4}  ║               ${CYAN}Professional Server Management${GRADIENT_4}                    ║${RESET}"
     console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     console "  ${YELLOW}╭─ SYSTEM INFORMATION ${GRAY}─────────────────────────────────────────${RESET}"
-    console "    ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition   │${RESET}"
-    console "    ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"       │${RESET}"
-    console "    ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"     │${RESET}"  
-    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────── ${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
+    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────${RESET}"
     console ""
 }
 
@@ -272,11 +268,11 @@ quick_execute() {
     fi
 }
 
-# 🛡️ PROFESSIONAL ROOT CHECK
+# 🛡️ SYSTEM CHECK WITH PROPER BOXES
 check_requirements() {
-    console "\n"
+    console ""
     print_header_line
-    console "  ${WHITE}🔍 SYSTEM REQUIREMENTS CHECK${RESET}"
+    console "  ${WHITE}🔍 SYSTEM VERIFICATION${RESET}"
     print_section_line
     
     # Root check
@@ -313,16 +309,21 @@ check_requirements() {
     console -ne "  ${BLUE}│${RESET} ${WHITE}Available Memory:${RESET} "
     local mem=$(free -m | awk '/^Mem:/{print $2}')
     if [ "$mem" -gt 1024 ]; then
-        console "${GREEN}${mem} MB${RESET}"
+        console "${GREEN}$(printf "%'d" $mem) MB${RESET}"
     else
-        console "${YELLOW}${mem} MB${RESET}"
-        console "  ${YELLOW}│${RESET} ${RED_LIGHT}⚠ Warning: Minimum 1GB RAM recommended${RESET}"
+        console "${YELLOW}$(printf "%'d" $mem) MB${RESET}"
+        console "  ${YELLOW}│${RESET} ${RED_LIGHT}⚠ Minimum 1GB RAM recommended${RESET}"
     fi
     
     # Disk space check
     console -ne "  ${BLUE}│${RESET} ${WHITE}Available Disk:${RESET} "
     local disk=$(df -h / | awk 'NR==2{print $4}')
     console "${GREEN}${disk}${RESET}"
+    
+    # Uptime
+    console -ne "  ${BLUE}│${RESET} ${WHITE}System Uptime:${RESET} "
+    local uptime_output=$(uptime -p | sed 's/up //')
+    console "${CYAN}${uptime_output}${RESET}"
     
     print_footer_line
     console ""
@@ -338,7 +339,7 @@ install_panel() {
     console "\n"
     print_header_line
     console "  ${PURPLE}🚀 INSTALLATION PROCESS INITIATED${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
     console "  ${BLUE}│${RESET} ${WHITE}Start Time:${RESET} ${CYAN}$(date '+%Y-%m-%d %H:%M:%S')${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Total Steps:${RESET} ${GREEN}${total_steps}${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
@@ -395,18 +396,16 @@ install_panel() {
     fi
     current_step=$((current_step + 1))
     
-    # 5. ADMIN ACCOUNT SETUP (FIXED - SHOWS PROMPTS TO USER)
+    # 5. ADMIN ACCOUNT SETUP
     show_progress $current_step $total_steps
     console "\n"
     print_header_line
     console "  ${CYAN}👤 ADMINISTRATOR ACCOUNT SETUP${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
+    console "  ${BLUE}│${RESET} ${WHITE}Please enter admin credentials:${RESET}"
     console ""
     
     local admin_email admin_name admin_pass
-    # First, show the prompts to user
-    console "  ${BLUE}│${RESET} ${WHITE}Please enter admin credentials:${RESET}"
-    console ""
     
     # Get email
     while true; do
@@ -444,14 +443,12 @@ install_panel() {
     execute_task "10" "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin" "pulse"
     current_step=$((current_step + 1))
     
-    # 6. PANEL URL SETUP (FIXED - NOW ASKING FOR PANEL URL)
+    # 6. PANEL URL SETUP
     show_progress $current_step $total_steps
     console "\n"
     print_header_line
     console "  ${CYAN}🌐 PANEL ACCESS CONFIGURATION${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
-    console ""
-    
+    print_section_line
     console "  ${BLUE}│${RESET} ${WHITE}Enter your panel access URL or IP address:${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}Examples:${RESET}"
     console "  ${BLUE}│${RESET}   ${CYAN}• panel.yourdomain.com${RESET}"
@@ -540,13 +537,13 @@ uninstall_panel() {
     console "\n"
     print_header_line
     console "  ${RED}⚠️  DANGER: COMPLETE UNINSTALLATION${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
     console "  ${RED}│${RESET} ${WHITE}This action will:${RESET}"
     console "  ${RED}│${RESET} ${YELLOW}• Remove PufferPanel completely${RESET}"
     console "  ${RED}│${RESET} ${YELLOW}• Delete ALL server data${RESET}"
     console "  ${RED}│${RESET} ${YELLOW}• Remove configurations${RESET}"
     console "  ${RED}│${RESET} ${YELLOW}• Clean up all related files${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
     console ""
     
     console -ne "  ${RED}│${RESET} ${WHITE}Type ${RED}CONFIRM${WHITE} to proceed: ${RESET}"
@@ -595,7 +592,7 @@ uninstall_panel() {
     console "\n"
     print_header_line
     console "  ${GREEN}✓ UNINSTALLATION COMPLETED${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
     console "  ${GREEN}│${RESET} ${WHITE}All components have been removed successfully${RESET}"
     console "  ${GREEN}│${RESET} ${CYAN}Recommended:${RESET} Reboot your system to complete cleanup"
     print_footer_line
@@ -610,7 +607,7 @@ system_status() {
     console "\n"
     print_header_line
     console "  ${CYAN}📊 SYSTEM STATUS CHECK${RESET}"
-    console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+    print_section_line
     
     # Panel Status
     console -ne "  ${BLUE}│${RESET} ${WHITE}PufferPanel:${RESET} "
@@ -662,6 +659,22 @@ system_status() {
 }
 
 # ==============================================================================
+#  🔧 RESTART SERVICES
+# ==============================================================================
+restart_services() {
+    console "\n"
+    print_header_line
+    console "  ${PURPLE}🛠️  RESTARTING SERVICES${RESET}"
+    print_section_line
+    
+    execute_task "RS1" "Restarting PufferPanel" "systemctl restart pufferpanel" "spinner"
+    execute_task "RS2" "Restarting Docker" "systemctl restart docker" "dots"
+    
+    console "\n  ${GREEN}✓ Services restarted successfully${RESET}"
+    print_footer_line
+}
+
+# ==============================================================================
 #  🎮 PROFESSIONAL MAIN MENU
 # ==============================================================================
 main_menu() {
@@ -669,20 +682,23 @@ main_menu() {
     show_intro
     sleep 1
     
-    # Then show requirements check
+    # Then show banner
+    show_banner
+    
+    # Then show system check
     check_requirements
     
     while true; do
         console ""
         print_header_line
         console "  ${WHITE}📋 MAIN MENU - Select an action${RESET}"
-        console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+        print_section_line
         console "  ${CYAN}│${RESET} ${GREEN}[1] 🚀${RESET} ${BOLD}Install PufferPanel${RESET} ${GRAY}(Recommended)${RESET}"
         console "  ${CYAN}│${RESET} ${RED}[2] 🗑️${RESET} ${BOLD}Uninstall PufferPanel${RESET} ${GRAY}(Danger Zone)${RESET}"
         console "  ${CYAN}│${RESET} ${BLUE}[3] 📊${RESET} ${BOLD}System Status${RESET} ${GRAY}(Check Services)${RESET}"
         console "  ${CYAN}│${RESET} ${PURPLE}[4] 🛠️${RESET} ${BOLD}Restart Services${RESET} ${GRAY}(Panel & Docker)${RESET}"
         console "  ${CYAN}│${RESET} ${YELLOW}[5] 🚪${RESET} ${BOLD}Exit${RESET} ${GRAY}(Close Script)${RESET}"
-        console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+        print_section_line
         console -ne "  ${CYAN}│${RESET} ${WHITE}👉 Your choice [1-5]: ${RESET}"
         
         console_read -r choice
@@ -698,15 +714,13 @@ main_menu() {
                 system_status
                 ;;
             4)
-                console "\n"
-                execute_task "RS1" "Restarting Services" "systemctl restart pufferpanel docker" "pulse"
-                console "  ${GREEN}✓ Services restarted successfully${RESET}"
+                restart_services
                 ;;
             5)
                 console "\n"
                 print_header_line
                 console "  ${CYAN}👋 Thank you for using KS Hosting!${RESET}"
-                console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
+                print_section_line
                 console "  ${BLUE}│${RESET} ${WHITE}Need help?${RESET} Check our documentation or contact support"
                 console "  ${BLUE}│${RESET} ${GRAY}Logs saved to:${RESET} ${CYAN}${LOG_FILE}${RESET}"
                 print_footer_line
