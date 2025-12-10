@@ -99,17 +99,17 @@ print_task_line() {
 show_intro() {
     clear >&3
     console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════════════════════╗${RESET}"
+    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
     console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
     console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
     console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
     console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
     console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
     console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║               ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}              ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
+    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ║       ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}        ║${RESET}"
+    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     
     # Show loading animation for 5 seconds
@@ -132,16 +132,16 @@ show_banner() {
     clear >&3
     console ""
     console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_3}  ║                     ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}                       ║${RESET}"
-    console "${GRADIENT_4}  ║               ${CYAN}Professional Server Management${GRADIENT_4}                    ║${RESET}"
+    console "${GRADIENT_2}  ║           ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}          ║${RESET}"
+    console "${GRADIENT_3}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_4}  ║        ${CYAN}Professional Server Management${GRADIENT_4}        ║${RESET}"
     console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     console "  ${YELLOW}╭─ SYSTEM INFORMATION ${GRAY}─────────────────────────────────────────${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
-    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────${RESET}"
+    console "    ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition   │${RESET}"
+    console "    ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"       │${RESET}"
+    console "    ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"     │${RESET}"  
+    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────── ${RESET}"
     console ""
 }
 
