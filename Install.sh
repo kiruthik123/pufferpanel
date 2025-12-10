@@ -28,6 +28,13 @@ show_banner() {
     echo ""
 }
 
+# Function: Pause before Main Menu
+return_to_menu() {
+    echo ""
+    echo -e "${YELLOW}Action complete.${NC}"
+    read -p "Press [ENTER] to return to the Main Menu..."
+}
+
 # Check if running as root
 if [ "$(id -u)" != "0" ]; then
    echo -e "${RED}[ERROR] This script must be run as root.${NC}" 1>&2
@@ -45,7 +52,6 @@ install_panel() {
     echo -e "${YELLOW}[INFO] Checking system dependencies...${NC}"
     sudo apt-get update -y && sudo apt-get install -y curl wget git
 
-    # Check/Install Docker
     if ! command -v docker > /dev/null; then
         echo -e "${YELLOW}[INFO] Docker not found. Installing Docker...${NC}"
         curl -fsSL https://get.docker.com | sudo sh
@@ -131,7 +137,7 @@ uninstall_panel() {
 
     if [ "$confirmation" != "AGREE" ]; then
         echo -e "${GREEN}Uninstall cancelled. Nothing was deleted.${NC}"
-        exit 1
+        return # Go back to menu instead of exit
     fi
 
     echo ""
@@ -162,31 +168,35 @@ uninstall_panel() {
 }
 
 # ==========================================
-# MAIN MENU
+# MAIN MENU LOOP
 # ==========================================
-show_banner
-show_loading
+while true; do
+    show_banner
+    # Only show loading once or optional here? We'll keep it fast.
+    
+    echo -e "Select an option:"
+    echo -e "${GREEN}[1] Install PufferPanel${NC}"
+    echo -e "${RED}[2] Uninstall PufferPanel${NC}"
+    echo -e "${YELLOW}[3] Exit${NC}"
+    echo ""
+    read -p "Enter your choice [1-3]: " choice
 
-echo -e "Select an option:"
-echo -e "${GREEN}[1] Install PufferPanel${NC}"
-echo -e "${RED}[2] Uninstall PufferPanel${NC}"
-echo -e "${YELLOW}[3] Exit${NC}"
-echo ""
-read -p "Enter your choice [1-3]: " choice
-
-case $choice in
-    1)
-        install_panel
-        ;;
-    2)
-        uninstall_panel
-        ;;
-    3)
-        echo -e "${GREEN}Exiting...${NC}"
-        exit 0
-        ;;
-    *)
-        echo -e "${RED}Invalid choice. Exiting...${NC}"
-        exit 1
-        ;;
-esac
+    case $choice in
+        1)
+            install_panel
+            return_to_menu
+            ;;
+        2)
+            uninstall_panel
+            return_to_menu
+            ;;
+        3)
+            echo -e "${GREEN}Exiting... Thank you for using KS HOSTING tools.${NC}"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Invalid choice.${NC}"
+            sleep 1
+            ;;
+    esac
+done
