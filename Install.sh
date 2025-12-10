@@ -108,12 +108,12 @@ show_intro() {
     console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
     console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
     console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║               ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}              ║${RESET}"
+    console "${GRADIENT_1}  ║                  ${WHITE}🚀 PUFFER PANEL INSTALLER 🚀${GRADIENT_1}                       ║${RESET}"
     console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     
     # Show loading animation for 5 seconds
-    console -ne "  ${CYAN}▶${RESET} ${WHITE}Initializing KS Hosting System"
+    console -ne "  ${CYAN}▶${RESET} ${WHITE}Initializing KS Hosting Puffer Panel"
     for i in {1..25}; do
         console -ne "${CYAN}.${RESET}"
         sleep 0.2
@@ -129,11 +129,11 @@ show_banner() {
     console ""
     console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
     console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_3}  ║                     ${WHITE}KS HOSTING CONTROL PANEL${GRADIENT_3}                       ║${RESET}"
+    console "${GRADIENT_3}  ║                  ${WHITE}KS HOSTING PUFFER PANEL${GRADIENT_3}                          ║${RESET}"
     console "${GRADIENT_4}  ║               ${CYAN}Professional Server Management${GRADIENT_4}                    ║${RESET}"
     console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
-    console "  ${YELLOW}╭─ SYSTEM INFORMATION ${GRAY}─────────────────────────────────────────${RESET}"
+    console "  ${YELLOW}╭─ SCRIPT DETAILS ${GRAY}────────────────────────────────────────────${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
@@ -268,11 +268,11 @@ quick_execute() {
     fi
 }
 
-# 🛡️ SYSTEM CHECK WITH PROPER BOXES
-check_requirements() {
+# 🔍 SYSTEM CHECK
+check_system() {
     console ""
     print_header_line
-    console "  ${WHITE}🔍 SYSTEM VERIFICATION${RESET}"
+    console "  ${WHITE}🔍 SYSTEM CHECK${RESET}"
     print_section_line
     
     # Root check
@@ -485,7 +485,7 @@ install_panel() {
     local ip_address=$(hostname -I | awk '{print $1}')
     local public_ip=$(curl -s -4 ifconfig.me 2>/dev/null || echo "Not detected")
     
-    console "  ${BLUE}│${RESET} ${WHITE}📊 SYSTEM INFORMATION${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}📊 INSTALLATION DETAILS${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Local IP:${RESET} ${CYAN}${ip_address}${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Public IP:${RESET} ${CYAN}${public_ip}${RESET}"
     console "  ${BLUE}│${RESET} ${GRAY}├─ Hostname:${RESET} ${CYAN}$(hostname)${RESET}"
@@ -686,7 +686,7 @@ main_menu() {
     show_banner
     
     # Then show system check
-    check_requirements
+    check_system
     
     while true; do
         console ""
