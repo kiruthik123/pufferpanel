@@ -54,25 +54,28 @@ GRADIENT_3='\033[38;5;201m'
 GRADIENT_4='\033[38;5;165m'
 
 # 📁 PROFESSIONAL LOGGING SYSTEM
-LOG_FILE="/var/log/kshosting_install_$(date +%Y%m%d_%H%M%S).log"
-AUDIT_LOG="/var/log/kshosting_audit.log"
-mkdir -p /var/log/kshosting/
+LOG_DIR="/var/log/kshosting"
+LOG_FILE="$LOG_DIR/install_$(date +%Y%m%d_%H%M%S).log"
+AUDIT_LOG="$LOG_DIR/audit.log"
+
+# Create log directory
+mkdir -p "$LOG_DIR"
 
 # Save original descriptors
-exec 3>&1
-exec 4>&2
+exec 3>&1  # Original stdout
+exec 4>&2  # Original stderr
+
+# Function to print to console (goes to original stdout via fd 3)
+console() {
+    echo -e "$@" >&3
+}
 
 # Redirect all output to log file
 exec 1>>"$LOG_FILE" 2>&1
 
-# Function to print to console (goes to original stdout via fd 3)
-console() {
-    echo -e "$1" >&3
-}
-
 # 📏 PROFESSIONAL SEPARATORS
 print_header_line() {
-    console "\n  ${GRAY_DARK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${RESET}"
+    console "  ${GRAY_DARK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${RESET}"
 }
 
 print_footer_line() {
@@ -85,6 +88,41 @@ print_section_line() {
 
 print_task_line() {
     console "  ${GRAY_LIGHT}├────────────────────────────────────────────────────────┤${RESET}"
+}
+
+# 🎭 KS HOSTING BRANDING INTRO
+show_intro() {
+    clear >&3
+    console ""
+    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
+    console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
+    console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
+    console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
+    console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
+    console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
+    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ║               ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}              ║${RESET}"
+    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
+    console ""
+    
+    # Show loading animation for 5 seconds
+    console -ne "  ${CYAN}▶${RESET} ${WHITE}Initializing KS Hosting System"
+    for i in {1..25}; do
+        console -ne "${CYAN}.${RESET}"
+        sleep 0.2
+    done
+    console ""
+    console ""
+    
+    # Show system info
+    console "  ${YELLOW}╭─ SYSTEM INFORMATION ${GRAY}─────────────────────────────────────────${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
+    console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
+    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────${RESET}"
+    console ""
 }
 
 # 📊 PROFESSIONAL STATUS FUNCTIONS
@@ -101,9 +139,9 @@ show_progress() {
     local empty=$((width - filled))
     
     console -ne "\r  ${BLUE}[${RESET}"
-    printf "%0.s█" $(seq 1 $filled)
-    printf "%0.s░" $(seq 1 $empty)
-    console -ne "${BLUE}] ${GREEN}${percent}%${RESET} ${GRAY}(Step ${current}/${total})${RESET}"
+    printf "%0.s█" $(seq 1 $filled) >&3
+    printf "%0.s░" $(seq 1 $empty) >&3
+    console -ne "${BLUE}] ${GREEN}${percent}%${RESET} ${GRAY}(Step ${current}/${total})${RESET}" >&3
 }
 
 # 🌟 ENHANCED LOADING ANIMATIONS
@@ -111,17 +149,18 @@ show_spinner() {
     local pid=$1
     local msg="$2"
     local delay=0.1
-    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local spinstr='|/-\'
     
-    console -ne "  ${BLUE}${spinstr:0:1}${RESET} ${WHITE}${msg}${RESET} "
+    console -ne "  ${BLUE}${spinstr:0:1}${RESET} ${WHITE}${msg}${RESET} " >&3
     
     while kill -0 $pid 2>/dev/null; do
-        for i in $(seq 0 9); do
-            console -ne "\b${BLUE}${spinstr:$i:1}${RESET}"
-            sleep $delay
-        done
+        local temp=${spinstr#?}
+        printf "%s" "$spinstr" >&3
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b" >&3
     done
-    console -ne "\b\b"
+    printf " \b" >&3
 }
 
 show_dots() {
@@ -129,19 +168,19 @@ show_dots() {
     local msg="$2"
     local count=0
     
-    console -ne "  ${CYAN}▶${RESET} ${WHITE}${msg}${RESET} "
+    console -ne "  ${CYAN}▶${RESET} ${WHITE}${msg}${RESET} " >&3
     
     while kill -0 $pid 2>/dev/null; do
         case $((count % 4)) in
-            0) console -ne "\b${YELLOW}.${RESET}  " ;;
-            1) console -ne "\b${YELLOW}..${RESET} " ;;
-            2) console -ne "\b${YELLOW}...${RESET}" ;;
-            3) console -ne "\b   \b\b\b" ;;
+            0) console -ne "\b.  " >&3 ;;
+            1) console -ne "\b.. " >&3 ;;
+            2) console -ne "\b..." >&3 ;;
+            3) console -ne "\b   \b\b\b" >&3 ;;
         esac
         sleep 0.5
         count=$((count + 1))
     done
-    console -ne "\b\b\b\b"
+    console -ne "\b\b\b\b" >&3
 }
 
 show_pulse() {
@@ -149,11 +188,11 @@ show_pulse() {
     local msg="$2"
     local frames=("○" "◎" "●" "◎")
     
-    console -ne "  ${PURPLE}${frames[0]}${RESET} ${WHITE}${msg}${RESET} "
+    console -ne "  ${PURPLE}${frames[0]}${RESET} ${WHITE}${msg}${RESET} " >&3
     
     while kill -0 $pid 2>/dev/null; do
         for frame in "${frames[@]}"; do
-            console -ne "\b${PURPLE}${frame}${RESET}"
+            console -ne "\b${PURPLE}${frame}${RESET}" >&3
             sleep 0.2
         done
     done
@@ -166,7 +205,7 @@ execute_task() {
     local command="$3"
     local animation="${4:-spinner}"
     
-    console "\n  ${BLUE_LIGHT}➤ TASK ${task_id}:${RESET} ${BOLD}${WHITE}${description}${RESET}"
+    console "\n  ${BLUE_LIGHT}▶ TASK ${task_id}:${RESET} ${BOLD}${WHITE}${description}${RESET}"
     console "  ${GRAY}└─ Command: ${ITALIC}${GRAY_LIGHT}${command:0:60}...${RESET}"
     
     # Execute command in background
@@ -202,39 +241,15 @@ quick_execute() {
     local description="$1"
     local command="$2"
     
-    console -ne "  ${CYAN}⚡ ${description}...${RESET}"
+    console -ne "  ${CYAN}⚡ ${description}...${RESET}" >&3
     
     if eval "$command" >/dev/null 2>&1; then
-        console -e "\r  ${GREEN}✓ ${description} - Done${RESET}"
+        console -e "\r  ${GREEN}✓ ${description} - Done${RESET}" >&3
         return 0
     else
-        console -e "\r  ${RED}✗ ${description} - Failed${RESET}"
+        console -e "\r  ${RED}✗ ${description} - Failed${RESET}" >&3
         return 1
     fi
-}
-
-# 🖼️ PROFESSIONAL BANNER
-show_banner() {
-    clear >&3
-    console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
-    console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
-    console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
-    console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
-    console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
-    console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║               ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}              ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
-    console ""
-    console "  ${YELLOW}╭─ INFO ${GRAY}──────────────────────────────────────────────────────${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
-    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────${RESET}"
-    console ""
 }
 
 # 🛡️ PROFESSIONAL ROOT CHECK
@@ -370,7 +385,7 @@ install_panel() {
     local admin_email admin_name admin_pass
     while true; do
         console -ne "  ${BLUE}│${RESET} ${WHITE}📧 Admin Email Address: ${RESET}"
-        read -r admin_email >&3
+        read -r admin_email
         if [[ "$admin_email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
             break
         else
@@ -379,14 +394,14 @@ install_panel() {
     done
     
     console -ne "  ${BLUE}│${RESET} ${WHITE}👤 Admin Username: ${RESET}"
-    read -r admin_name >&3
+    read -r admin_name
     
     console -ne "  ${BLUE}│${RESET} ${WHITE}🔑 Admin Password: ${RESET}"
-    read -s -r admin_pass >&3
+    read -s -r admin_pass
     console ""
     
     console -ne "  ${BLUE}│${RESET} ${WHITE}🔒 Confirm Password: ${RESET}"
-    read -s -r admin_pass_confirm >&3
+    read -s -r admin_pass_confirm
     console ""
     
     if [ "$admin_pass" != "$admin_pass_confirm" ]; then
@@ -414,7 +429,7 @@ install_panel() {
     console "  ${BLUE}│${RESET}   ${CYAN}• server.yourhost.com${RESET}"
     console ""
     console -ne "  ${BLUE}│${RESET} ${GREEN}➤ ${WHITE}Panel URL/IP: ${RESET}"
-    read -r panel_host >&3
+    read -r panel_host
     print_footer_line
     
     current_step=$((current_step + 1))
@@ -494,7 +509,7 @@ uninstall_panel() {
     console ""
     
     console -ne "  ${RED}│${RESET} ${WHITE}Type ${RED}CONFIRM${WHITE} to proceed: ${RESET}"
-    read -r confirmation >&3
+    read -r confirmation
     
     if [ "$confirmation" != "CONFIRM" ]; then
         console "\n  ${GREEN}✓ Uninstallation cancelled${RESET}"
@@ -609,10 +624,14 @@ system_status() {
 #  🎮 PROFESSIONAL MAIN MENU
 # ==============================================================================
 main_menu() {
+    # Show KS Hosting intro first
+    show_intro
+    sleep 1
+    
+    # Then show requirements check
+    check_requirements
+    
     while true; do
-        show_banner
-        check_requirements
-        
         console ""
         print_header_line
         console "  ${WHITE}📋 MAIN MENU - Select an action${RESET}"
@@ -625,7 +644,7 @@ main_menu() {
         console "  ${GRAY}├────────────────────────────────────────────────────────┤${RESET}"
         console -ne "  ${CYAN}│${RESET} ${WHITE}👉 Your choice [1-5]: ${RESET}"
         
-        read -r choice >&3
+        read -r choice
         
         case $choice in
             1)
@@ -660,7 +679,7 @@ main_menu() {
         
         if [ "$choice" -ne 5 ]; then
             console "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
-            read -r >&3
+            read -r
         fi
     done
 }
