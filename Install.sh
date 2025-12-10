@@ -15,24 +15,31 @@ BLUE='\033[1;34m'
 MAGENTA='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
+GRAY='\033[1;30m'
 
 # 📁 LOGGING SETUP
 LOG_FILE="kshosting_install.log"
 exec 3>&1 # Save original stdout
 
+# 📏 SEPARATOR LINE FUNCTION
+print_line() {
+    echo -e "  ${GRAY}------------------------------------------------------${RESET}"
+}
+
 # 🔄 ANIMATION FUNCTION
-# Usage: execute "Message to show" "command to run"
 execute() {
     local message="$1"
     local command="$2"
     
+    # Print the "Loading" line
     echo -ne "  ⏳ ${YELLOW}${message}...${RESET}"
     
-    # Run command in background, redirect output to log file
+    # Run command in background, silence ALL output to log
+    # We use nohup to try and detach from terminal noise
     eval "$command" > "$LOG_FILE" 2>&1 &
     local pid=$!
     
-    # Animation loop while process is running
+    # Animation loop
     local delay=0.1
     local spinstr='|/-\'
     while ps -p $pid > /dev/null; do
@@ -47,14 +54,20 @@ execute() {
     wait $pid
     local exit_code=$?
 
-    # Clear the line and print result
+    # Clear the line fully to overwrite any system noise
+    echo -ne "\r\033[K" 
+
+    # Print result
     if [ $exit_code -eq 0 ]; then
-        echo -e "\r  ✅ ${GREEN}${message} - COMPLETED${RESET}      "
+        echo -e "  ✅ ${GREEN}${message} - COMPLETED${RESET}"
     else
-        echo -e "\r  ❌ ${RED}${message} - FAILED${RESET}           "
-        echo -e "${RED}  [!] Check $LOG_FILE for error details.${RESET}"
+        echo -e "  ❌ ${RED}${message} - FAILED${RESET}"
+        echo -e "  ${RED}[!] Check $LOG_FILE for error details.${RESET}"
         read -p "Press Enter to continue anyway..."
     fi
+    
+    # Add the requested separator line
+    print_line
 }
 
 # 🖼️ BANNER
@@ -64,7 +77,7 @@ show_banner() {
     echo -e "${CYAN}  ║           ${MAGENTA}⚡ KS HOSTING BY KSGAMING ⚡${CYAN}               ║${RESET}"
     echo -e "${CYAN}  ║      ${WHITE}High Performance Game Server Management${CYAN}         ║${RESET}"
     echo -e "${CYAN}  ╚══════════════════════════════════════════════════════╝${RESET}"
-    echo -e "  ${YELLOW}▶ Script Version: 2.0 (Ultra)${RESET}"
+    echo -e "  ${YELLOW}▶ Script Version: 2.1 (Lines Added)${RESET}"
     echo ""
 }
 
@@ -80,7 +93,7 @@ fi
 install_panel() {
     echo -e "${BLUE}  [🚀] STARTING INSTALLATION PROCESS...${RESET}"
     echo -e "${WHITE}  Logs are being saved to: ${LOG_FILE}${RESET}"
-    echo ""
+    print_line
 
     # 1. DEPENDENCIES
     execute "Updating System & Basics" "apt-get update -y && apt-get install -y curl wget git sudo"
@@ -90,6 +103,7 @@ install_panel() {
         execute "Installing Docker Engine" "curl -fsSL https://get.docker.com | sh && systemctl enable --now docker"
     else
         echo -e "  ✅ ${GREEN}Docker Engine is already installed${RESET}"
+        print_line
     fi
 
     # 3. REPOSITORY
@@ -106,6 +120,7 @@ install_panel() {
         execute "Configuring Firewall (8080/5657)" "ufw allow 8080/tcp && ufw allow 5657/tcp && ufw reload"
     else
         echo -e "  ⚠️ ${YELLOW}UFW not found. Skipping Firewall setup.${RESET}"
+        print_line
     fi
 
     # 7. USER SETUP (INTERACTIVE)
@@ -121,6 +136,7 @@ install_panel() {
     read -s -p "  🔑 Password: " admin_pass
     echo "" 
 
+    print_line
     execute "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin"
 
     # 8. URL SETUP
@@ -157,6 +173,7 @@ uninstall_panel() {
     fi
 
     echo ""
+    print_line
     execute "Stopping Services" "systemctl stop pufferpanel && systemctl disable pufferpanel"
     execute "Removing Package" "apt-get purge pufferpanel -y && apt-get autoremove -y"
     execute "Deleting Server Data" "rm -rf /var/lib/pufferpanel && rm -rf /etc/pufferpanel"
@@ -185,10 +202,12 @@ while true; do
     case $choice in
         1)
             install_panel
+            print_line
             read -p "  Press [ENTER] to return to menu..."
             ;;
         2)
             uninstall_panel
+            print_line
             read -p "  Press [ENTER] to return to menu..."
             ;;
         3)
