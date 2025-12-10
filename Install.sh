@@ -99,17 +99,17 @@ print_task_line() {
 show_intro() {
     clear >&3
     console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════════════════════╗${RESET}"
+    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
     console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
     console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
     console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
     console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
     console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
     console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║                  ${WHITE}🚀 PUFFER PANEL INSTALLER 🚀${GRADIENT_1}                       ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
+    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
+    console "${GRADIENT_1}  ║                  ${WHITE}🚀 PUFFER PANEL INSTALLER 🚀${GRADIENT_1}              ║${RESET}"
+    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     
     # Show loading animation for 5 seconds
@@ -126,13 +126,13 @@ show_intro() {
 
 # 🖼️ CLEAN BANNER
 show_banner() {
-    console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                  ║${RESET}"
-    console "${GRADIENT_3}  ║                  ${WHITE}KS HOSTING PUFFER PANEL${GRADIENT_3}                          ║${RESET}"
-    console "${GRADIENT_4}  ║               ${CYAN}Professional Server Management${GRADIENT_4}                    ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════╝${RESET}"
-    console ""
+console ""
+console "${GRADIENT_1}  ╔════════════════════════════════════════════════════════════════════════╗${RESET}"
+console "${GRADIENT_2}  ║                                                                        ║${RESET}"
+console "${GRADIENT_3}  ║            ${WHITE}KS HOSTING PUFFER PANEL${RESET}${GRADIENT_3}        ║${RESET}"
+console "${GRADIENT_4}  ║        ${CYAN}Professional Server Management${RESET}${GRADIENT_4}      ║${RESET}"
+console "${GRADIENT_1}  ╚════════════════════════════════════════════════════════════════════════╝${RESET}"
+console ""
     console "  ${YELLOW}╭─ SCRIPT DETAILS ${GRAY}────────────────────────────────────────────${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
     console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
