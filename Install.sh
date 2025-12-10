@@ -108,7 +108,7 @@ show_intro() {
     console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
     console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
     console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║       ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}        ║${RESET}"
+    console "${GRADIENT_1}  ║        ${WHITE}🚀 PROFESSIONAL SERVER MANAGEMENT PLATFORM 🚀${GRADIENT_1}        ║${RESET}"
     console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════════════════════╝${RESET}"
     console ""
     
