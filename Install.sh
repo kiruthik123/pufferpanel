@@ -80,15 +80,15 @@ exec 1>>"$LOG_FILE" 2>&1
 
 # 📏 PROFESSIONAL SEPARATORS
 print_header_line() {
-    console "  ${GRAY_DARK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${RESET}"
+    console "  ${GRAY_DARK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${RESET}"
 }
 
 print_footer_line() {
-    console "  ${GRAY_DARK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${RESET}"
+    console "  ${GRAY_DARK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${RESET}"
 }
 
 print_section_line() {
-    console "  ${GRAY}╠════════════════════════════════════════════════════════════╣${RESET}"
+    console "  ${GRAY}╠══════════════════════════════════════════════════════════════╣${RESET}"
 }
 
 print_task_line() {
