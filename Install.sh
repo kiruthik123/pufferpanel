@@ -185,12 +185,11 @@ delete_panel() {
     
     print_line
     
-    echo -e "${YELLOW}❓ Are you sure? (y/N): ${RESET}"
-    echo -ne "  ${RED}>>> ${RESET}"
-    read -n 1 confirm_delete
-    echo ""
+    echo -e "${YELLOW}❓ Are you sure you want to delete everything?${RESET}"
+    echo -ne "  ${WHITE}Type ${GREEN}'yes'${WHITE} to confirm or ${RED}'no'${WHITE} to cancel: ${RESET}"
+    read confirm_delete
     
-    if [[ ! "$confirm_delete" =~ ^[Yy]$ ]]; then
+    if [[ "$confirm_delete" != "yes" ]]; then
         echo -e "  ${GREEN}✅ Delete cancelled${RESET}"
         return
     fi
@@ -282,8 +281,7 @@ while true; do
     print_line
     
     echo -ne "  ${WHITE}👉 Choose [1-4]: ${RESET}"
-    read -n 1 choice
-    echo ""
+    read choice
     
     case $choice in
         1)
