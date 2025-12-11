@@ -1,754 +1,439 @@
 #!/bin/bash
 
 # ==============================================================================
-#  ⚡ KS HOSTING - ULTIMATE PUFFERPANEL MANAGER
-#  Author: KSGAMING | Professional Server Solutions
-#  Version: 3.0 Professional Edition
+#  ⚡ KS HOSTING - ULTIMATE PUFFERPANEL MANAGER ⚡
+#  Version: 2.1 | Author: KSGAMING | License: MIT
 # ==============================================================================
 
-# 🎨 PROFESSIONAL COLOR PALETTE
+# 🎨 COLOR PALETTE
 RESET='\033[0m'
 BOLD='\033[1m'
-ITALIC='\033[3m'
-
-# 🔴 Red Variations
 RED='\033[1;31m'
-RED_LIGHT='\033[38;5;203m'
-RED_DARK='\033[38;5;124m'
-
-# 🟢 Green Variations
 GREEN='\033[1;32m'
-GREEN_LIGHT='\033[38;5;154m'
-GREEN_DARK='\033[38;5;28m'
-
-# 🟡 Yellow Variations
 YELLOW='\033[1;33m'
-YELLOW_LIGHT='\033[38;5;227m'
-YELLOW_DARK='\033[38;5;178m'
-
-# 🔵 Blue Variations
 BLUE='\033[1;34m'
-BLUE_LIGHT='\033[38;5;117m'
-BLUE_DARK='\033[38;5;26m'
-
-# 🟣 Purple Variations
-PURPLE='\033[1;35m'
-PURPLE_LIGHT='\033[38;5;213m'
-PURPLE_DARK='\033[38;5;93m'
-
-# 🟢 Cyan Variations
+MAGENTA='\033[1;35m'
 CYAN='\033[1;36m'
-CYAN_LIGHT='\033[38;5;123m'
-CYAN_DARK='\033[38;5;44m'
-
-# ⚪ White/Gray Variations
 WHITE='\033[1;37m'
-GRAY='\033[1;90m'
-GRAY_LIGHT='\033[38;5;250m'
-GRAY_DARK='\033[38;5;240m'
+GRAY='\033[90m'
+ORANGE='\033[38;5;208m'
+PURPLE='\033[38;5;93m'
+LIME='\033[38;5;154m'
 
-# 🌈 Gradient Colors
-GRADIENT_1='\033[38;5;213m'
-GRADIENT_2='\033[38;5;207m'
-GRADIENT_3='\033[38;5;201m'
-GRADIENT_4='\033[38;5;165m'
+# 📁 LOGGING SETUP
+LOG_FILE="/var/log/kshosting_install.log"
+exec 3>&1
 
-# 📁 PROFESSIONAL LOGGING SYSTEM
-LOG_DIR="/var/log/kshosting"
-LOG_FILE="$LOG_DIR/install_$(date +%Y%m%d_%H%M%S).log"
-AUDIT_LOG="$LOG_DIR/audit.log"
-
-# Create log directory
-mkdir -p "$LOG_DIR"
-
-# Save original descriptors
-exec 3>&1  # Original stdout
-exec 4>&2  # Original stderr
-
-# Function to print to console (goes to original stdout via fd 3)
-console() {
-    echo -e "$@" >&3
+# 🌈 GRADIENT TEXT EFFECT
+gradient() {
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
+    echo -e "${BLUE}║    ⚡ ${PURPLE}K S   H O S T I N G   P R O F E S S I O N A L ⚡    ${BLUE}║${RESET}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
 }
 
-# Function to read input from user (preserves original stdin)
-console_read() {
-    read "$@" <&3
+# 📏 SEPARATOR LINE FUNCTION
+print_line() {
+    echo -e "${PURPLE}┌────────────────────────────────────────────────────────────┐${RESET}"
 }
 
-# Redirect all output to log file
-exec 1>>"$LOG_FILE" 2>&1
-
-# 📏 PROFESSIONAL SEPARATORS
-print_header_line() {
-    console "  ${GRAY_DARK}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${RESET}"
+print_endline() {
+    echo -e "${PURPLE}└────────────────────────────────────────────────────────────┘${RESET}"
 }
 
-print_footer_line() {
-    console "  ${GRAY_DARK}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${RESET}"
-}
-
-print_section_line() {
-    console "  ${GRAY}╠══════════════════════════════════════════════════════════════╣${RESET}"
-}
-
-print_task_line() {
-    console "  ${GRAY_LIGHT}├────────────────────────────────────────────────────────┤${RESET}"
-}
-
-# 🎭 KS HOSTING BRANDING INTRO
-show_intro() {
-    clear >&3
-    console ""
-    console "${GRADIENT_1}  ╔══════════════════════════════════════════════════════════════════════════════════╗${RESET}"
-    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
-    console "${GRADIENT_3}  ║    ██╗  ██╗███████╗    ██╗  ██╗ ██████╗ ███████╗████████╗██╗███╗   ██╗ ██████╗   ║${RESET}"
-    console "${GRADIENT_4}  ║    ██║ ██╔╝██╔════╝    ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝██║████╗  ██║██╔════╝   ║${RESET}"
-    console "${GRADIENT_1}  ║    █████╔╝ ███████╗    ███████║██║   ██║███████╗   ██║   ██║██╔██╗ ██║██║  ███╗  ║${RESET}"
-    console "${GRADIENT_2}  ║    ██╔═██╗ ╚════██║    ██╔══██║██║   ██║╚════██║   ██║   ██║██║╚██╗██║██║   ██║  ║${RESET}"
-    console "${GRADIENT_3}  ║    ██║  ██╗███████║    ██║  ██║╚██████╔╝███████║   ██║   ██║██║ ╚████║╚██████╔╝  ║${RESET}"
-    console "${GRADIENT_4}  ║    ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝╚═╝  ╚═══╝ ╚═════╝   ║${RESET}"
-    console "${GRADIENT_2}  ║                                                                                  ║${RESET}"
-    console "${GRADIENT_1}  ║                  ${WHITE}🚀 PUFFER PANEL INSTALLER 🚀${GRADIENT_1}              ║${RESET}"
-    console "${GRADIENT_1}  ╚══════════════════════════════════════════════════════════════════════════════════╝${RESET}"
-    console ""
-    
-    # Show loading animation for 5 seconds
-    console -ne "  ${CYAN}▶${RESET} ${WHITE}Initializing KS Hosting Puffer Panel"
-    for i in {1..25}; do
-        console -ne "${CYAN}.${RESET}"
-        sleep 0.2
-    done
-    console ""
-    
-    # Clear the animation and show system info
-    clear >&3
-}
-
-# 🖼️ CLEAN BANNER
-show_banner() {
-console ""
-console "${GRADIENT_1}  ╔════════════════════════════════════════════════════════════════════════╗${RESET}"
-console "${GRADIENT_2}  ║                                                                        ║${RESET}"
-console "${GRADIENT_3}  ║            ${WHITE}KS HOSTING PUFFER PANEL${RESET}${GRADIENT_3}        ║${RESET}"
-console "${GRADIENT_4}  ║        ${CYAN}Professional Server Management${RESET}${GRADIENT_4}      ║${RESET}"
-console "${GRADIENT_1}  ╚════════════════════════════════════════════════════════════════════════╝${RESET}"
-console ""
-    console "  ${YELLOW}╭─ SCRIPT DETAILS ${GRAY}────────────────────────────────────────────${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Version:${RESET} ${GREEN}3.0 Professional Edition${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Audit Log:${RESET} ${CYAN}${AUDIT_LOG}${RESET}"
-    console "  ${YELLOW}╰───────────────────────────────────────────────────────────────────${RESET}"
-    console ""
-}
-
-# 📊 PROFESSIONAL STATUS FUNCTIONS
-log_audit() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$AUDIT_LOG"
-}
-
-show_progress() {
-    local current=$1
-    local total=$2
-    local width=50
-    local percent=$((current * 100 / total))
-    local filled=$((width * current / total))
-    local empty=$((width - filled))
-    
-    console -ne "\r  ${BLUE}[${RESET}" >&3
-    printf "%0.s█" $(seq 1 $filled) >&3
-    printf "%0.s░" $(seq 1 $empty) >&3
-    console -ne "${BLUE}] ${GREEN}${percent}%${RESET} ${GRAY}(Step ${current}/${total})${RESET}" >&3
-}
-
-# 🌟 ENHANCED LOADING ANIMATIONS
-show_spinner() {
+# 🔄 SPINNER ANIMATION FUNCTION
+spinner() {
     local pid=$1
-    local msg="$2"
     local delay=0.1
-    local spinstr='|/-\'
-    
-    console -ne "  ${BLUE}${spinstr:0:1}${RESET} ${WHITE}${msg}${RESET} " >&3
+    local spin_chars=("🕐" "🕑" "🕒" "🕓" "🕔" "🕕" "🕖" "🕗" "🕘" "🕙" "🕚" "🕛")
+    local i=0
     
     while kill -0 $pid 2>/dev/null; do
-        local temp=${spinstr#?}
-        printf "%s" "$spinstr" >&3
-        local spinstr=$temp${spinstr%"$temp"}
+        echo -ne "\r  ${spin_chars[$i]} ${YELLOW}Processing...${RESET}"
+        i=$(((i + 1) % 12))
         sleep $delay
-        printf "\b" >&3
     done
-    printf " \b" >&3
+    echo -ne "\r\033[K"
 }
 
-show_dots() {
-    local pid=$1
-    local msg="$2"
-    local count=0
+# ✅ EXECUTE WITH ANIMATION
+execute() {
+    local message="$1"
+    local command="$2"
+    local critical="${3:-false}"
     
-    console -ne "  ${CYAN}▶${RESET} ${WHITE}${msg}${RESET} " >&3
+    echo -ne "  ${BLUE}➤${RESET} ${WHITE}${message}${RESET}"
     
-    while kill -0 $pid 2>/dev/null; do
-        case $((count % 4)) in
-            0) console -ne "\b.  " >&3 ;;
-            1) console -ne "\b.. " >&3 ;;
-            2) console -ne "\b..." >&3 ;;
-            3) console -ne "\b   \b\b\b" >&3 ;;
-        esac
-        sleep 0.5
-        count=$((count + 1))
-    done
-    console -ne "\b\b\b\b" >&3
-}
-
-show_pulse() {
-    local pid=$1
-    local msg="$2"
-    local frames=("○" "◎" "●" "◎")
-    
-    console -ne "  ${PURPLE}${frames[0]}${RESET} ${WHITE}${msg}${RESET} " >&3
-    
-    while kill -0 $pid 2>/dev/null; do
-        for frame in "${frames[@]}"; do
-            console -ne "\b${PURPLE}${frame}${RESET}" >&3
-            sleep 0.2
-        done
-    done
-}
-
-# 🚀 PROFESSIONAL EXECUTE FUNCTIONS
-execute_task() {
-    local task_id="$1"
-    local description="$2"
-    local command="$3"
-    local animation="${4:-spinner}"
-    
-    console "\n  ${BLUE_LIGHT}▶ TASK ${task_id}:${RESET} ${BOLD}${WHITE}${description}${RESET}"
-    console "  ${GRAY}└─ Command: ${ITALIC}${GRAY_LIGHT}${command:0:60}...${RESET}"
-    
-    # Execute command in background
-    eval "$command" &
+    eval "$command" >> "$LOG_FILE" 2>&1 &
     local pid=$!
     
-    # Show selected animation
-    case $animation in
-        "spinner") show_spinner "$pid" "Processing" ;;
-        "dots") show_dots "$pid" "Running" ;;
-        "pulse") show_pulse "$pid" "Executing" ;;
-    esac
+    spinner $pid
     
-    # Wait for completion
     wait $pid
     local exit_code=$?
     
-    # Show result
     if [ $exit_code -eq 0 ]; then
-        console "\r  ${GREEN_LIGHT}✓ SUCCESS:${RESET} ${GREEN}${description} completed${RESET}"
-        log_audit "TASK $task_id PASS: $description"
+        echo -e "\r  ${GREEN}✓${RESET} ${LIME}${message} ${GREEN}SUCCESS${RESET}"
     else
-        console "\r  ${RED_LIGHT}✗ FAILED:${RESET} ${RED}${description} (Code: ${exit_code})${RESET}"
-        console "  ${YELLOW}  ↳ Check details: ${CYAN}tail -f ${LOG_FILE}${RESET}"
-        log_audit "TASK $task_id FAIL: $description (Exit: $exit_code)"
+        echo -e "\r  ${RED}✗${RESET} ${RED}${message} ${ORANGE}FAILED${RESET}"
+        if [ "$critical" = "true" ]; then
+            echo -e "  ${RED}⚠  CRITICAL ERROR - Installation cannot continue${RESET}"
+            echo -e "  ${YELLOW}📋 Check log: ${WHITE}$LOG_FILE${RESET}"
+            exit 1
+        fi
     fi
-    
-    print_task_line
-    return $exit_code
 }
 
-quick_execute() {
-    local description="$1"
-    local command="$2"
-    
-    console -ne "  ${CYAN}⚡ ${description}...${RESET}" >&3
-    
-    if eval "$command" >/dev/null 2>&1; then
-        console -e "\r  ${GREEN}✓ ${description} - Done${RESET}" >&3
-        return 0
-    else
-        console -e "\r  ${RED}✗ ${description} - Failed${RESET}" >&3
-        return 1
+# 🖼️ DYNAMIC BANNER
+show_banner() {
+    clear
+    echo ""
+    gradient
+    echo ""
+    echo -e "  ${WHITE}┌────────────────────────────────────────────────────────────┐${RESET}"
+    echo -e "  ${WHITE}│     ${CYAN}🏆 ${PURPLE}Ultimate Game Server Management Platform ${CYAN}🏆     ${WHITE}│${RESET}"
+    echo -e "  ${WHITE}│     ${YELLOW}✨ Version 2.1 | Professional Edition ✨      ${WHITE}│${RESET}"
+    echo -e "  ${WHITE}└────────────────────────────────────────────────────────────┘${RESET}"
+    echo ""
+}
+
+# 🛡️ ROOT CHECK
+check_root() {
+    if [ "$(id -u)" != "0" ]; then
+        echo -e "${RED}"
+        echo "  ╔══════════════════════════════════════════════════╗"
+        echo "  ║                                                    ║"
+        echo "  ║  🔒 ${WHITE}P E R M I S S I O N   D E N I E D 🔒      ${RED}║"
+        echo "  ║                                                    ║"
+        echo "  ║  This script requires ${YELLOW}root privileges${RED}         ║"
+        echo "  ║  Please run with: ${WHITE}sudo ./install.sh${RED}            ║"
+        echo "  ║                                                    ║"
+        echo "  ╚══════════════════════════════════════════════════╝"
+        echo -e "${RESET}"
+        exit 1
     fi
 }
 
 # 🔍 SYSTEM CHECK
-check_system() {
-    console ""
-    print_header_line
-    console "  ${WHITE}🔍 SYSTEM CHECK${RESET}"
-    print_section_line
+system_check() {
+    echo -e "${CYAN}"
+    echo "  📊 SYSTEM ANALYSIS"
+    echo -e "${WHITE}"
+    print_line
     
-    # Root check
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Root Privileges:${RESET} "
-    if [ "$(id -u)" = "0" ]; then
-        console "${GREEN}✓ Granted${RESET}"
-    else
-        console "${RED}✗ Denied${RESET}"
-        console "  ${RED}│${RESET}"
-        console "  ${RED}│${RESET} ${YELLOW}This script requires root privileges.${RESET}"
-        console "  ${RED}│${RESET} ${CYAN}Please run: ${BOLD}sudo bash $0${RESET}"
-        print_footer_line
-        exit 1
-    fi
-    
-    # OS check
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Operating System:${RESET} "
+    # Check OS
     if [ -f /etc/os-release ]; then
         . /etc/os-release
-        console "${GREEN}${PRETTY_NAME}${RESET}"
+        echo -e "  ${GREEN}✓${RESET} ${WHITE}OS:${RESET} ${YELLOW}$PRETTY_NAME${RESET}"
     else
-        console "${YELLOW}Unknown${RESET}"
+        echo -e "  ${YELLOW}⚠${RESET} ${WHITE}OS:${RESET} ${ORANGE}Unknown Linux Distribution${RESET}"
     fi
     
-    # Architecture check
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Architecture:${RESET} "
-    case $(uname -m) in
-        x86_64) console "${GREEN}x86_64 (64-bit)${RESET}" ;;
-        aarch64) console "${GREEN}ARM64${RESET}" ;;
-        *) console "${YELLOW}$(uname -m)${RESET}" ;;
-    esac
+    # Check RAM
+    total_ram=$(free -h | awk '/^Mem:/ {print $2}')
+    echo -e "  ${GREEN}✓${RESET} ${WHITE}RAM:${RESET} ${YELLOW}$total_ram${RESET}"
     
-    # Memory check
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Available Memory:${RESET} "
-    local mem=$(free -m | awk '/^Mem:/{print $2}')
-    if [ "$mem" -gt 1024 ]; then
-        console "${GREEN}$(printf "%'d" $mem) MB${RESET}"
-    else
-        console "${YELLOW}$(printf "%'d" $mem) MB${RESET}"
-        console "  ${YELLOW}│${RESET} ${RED_LIGHT}⚠ Minimum 1GB RAM recommended${RESET}"
-    fi
+    # Check Disk Space
+    disk_space=$(df -h / | awk 'NR==2 {print $4}')
+    echo -e "  ${GREEN}✓${RESET} ${WHITE}Disk:${RESET} ${YELLOW}$disk_space free${RESET}"
     
-    # Disk space check
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Available Disk:${RESET} "
-    local disk=$(df -h / | awk 'NR==2{print $4}')
-    console "${GREEN}${disk}${RESET}"
-    
-    # Uptime
-    console -ne "  ${BLUE}│${RESET} ${WHITE}System Uptime:${RESET} "
-    local uptime_output=$(uptime -p | sed 's/up //')
-    console "${CYAN}${uptime_output}${RESET}"
-    
-    print_footer_line
-    console ""
+    print_endline
+    echo ""
 }
 
 # ==============================================================================
-#  🚀 PROFESSIONAL INSTALLATION PROCESS
+#  🚀 INSTALLATION PROCESS
 # ==============================================================================
 install_panel() {
-    local total_steps=12
-    local current_step=1
+    show_banner
+    system_check
     
-    console "\n"
-    print_header_line
-    console "  ${PURPLE}🚀 INSTALLATION PROCESS INITIATED${RESET}"
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}Start Time:${RESET} ${CYAN}$(date '+%Y-%m-%d %H:%M:%S')${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Total Steps:${RESET} ${GREEN}${total_steps}${RESET}"
-    console "  ${BLUE}│${RESET} ${WHITE}Log File:${RESET} ${CYAN}${LOG_FILE}${RESET}"
-    print_footer_line
+    echo -e "${CYAN}  🚀 STARTING PROFESSIONAL INSTALLATION ${RESET}"
+    echo -e "${GRAY}  📝 Log file: ${WHITE}$LOG_FILE${RESET}"
+    print_line
     
-    log_audit "INSTALLATION STARTED"
+    # 1. SYSTEM UPDATE
+    execute "Updating System Packages" "apt-get update -y && apt-get upgrade -y" "true"
     
-    # 1. SYSTEM PREPARATION
-    show_progress $current_step $total_steps
-    execute_task "01" "System Package Update" "apt-get update -y" "spinner"
-    current_step=$((current_step + 1))
+    # 2. ESSENTIAL DEPENDENCIES
+    execute "Installing Essential Tools" "apt-get install -y curl wget git sudo gnupg2 ca-certificates apt-transport-https software-properties-common" "true"
     
-    show_progress $current_step $total_steps
-    execute_task "02" "Installing Essential Tools" "apt-get install -y curl wget git sudo nano htop ufw software-properties-common apt-transport-https ca-certificates gnupg lsb-release" "dots"
-    current_step=$((current_step + 1))
-    
-    # 2. DOCKER INSTALLATION
-    show_progress $current_step $total_steps
+    # 3. DOCKER INSTALLATION
     if ! command -v docker > /dev/null; then
-        execute_task "03" "Docker Repository Setup" "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && echo 'deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable' | tee /etc/apt/sources.list.d/docker.list > /dev/null" "spinner"
-        current_step=$((current_step + 1))
-        
-        show_progress $current_step $total_steps
-        execute_task "04" "Docker Engine Installation" "apt-get update -y && apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin" "pulse"
-        current_step=$((current_step + 1))
-        
-        show_progress $current_step $total_steps
-        execute_task "05" "Docker Service Configuration" "systemctl enable --now docker && usermod -aG docker \$SUDO_USER" "dots"
-        current_step=$((current_step + 1))
+        execute "Installing Docker Engine" "curl -fsSL https://get.docker.com | sh" "true"
+        execute "Starting Docker Service" "systemctl enable --now docker" "true"
+        execute "Testing Docker" "docker run hello-world --quiet" "false"
     else
-        console "\n  ${GREEN}✓ Docker is already installed${RESET}"
-        current_step=$((current_step + 3))
+        echo -e "  ${GREEN}🎯 Docker already installed${RESET}"
+        docker_version=$(docker --version | cut -d' ' -f3 | tr -d ',')
+        echo -e "  ${BLUE}ℹ Version: ${WHITE}$docker_version${RESET}"
     fi
     
-    # 3. PUFFERPANEL INSTALLATION
-    show_progress $current_step $total_steps
-    execute_task "06" "PufferPanel Repository Setup" "curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | bash" "spinner"
-    current_step=$((current_step + 1))
+    print_line
     
-    show_progress $current_step $total_steps
-    execute_task "07" "PufferPanel Core Installation" "apt-get install pufferpanel -y" "pulse"
-    current_step=$((current_step + 1))
+    # 4. PUFFERPANEL REPOSITORY
+    execute "Adding PufferPanel Repository" "curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | bash" "true"
     
-    show_progress $current_step $total_steps
-    execute_task "08" "Panel Service Activation" "systemctl enable --now pufferpanel && systemctl status pufferpanel --no-pager -l" "dots"
-    current_step=$((current_step + 1))
+    # 5. PANEL INSTALLATION
+    execute "Installing PufferPanel Core" "apt-get install pufferpanel -y" "true"
     
-    # 4. NETWORK CONFIGURATION
-    show_progress $current_step $total_steps
+    # 6. SERVICE CONFIGURATION
+    execute "Configuring Panel Service" "systemctl enable --now pufferpanel" "true"
+    
+    # 7. FIREWALL CONFIGURATION
     if command -v ufw > /dev/null; then
-        execute_task "09" "Firewall Configuration" "ufw --force enable && ufw allow 22/tcp && ufw allow 8080/tcp && ufw allow 5657/tcp && ufw --force reload" "spinner"
+        execute "Configuring Firewall Rules" "ufw allow 8080/tcp && ufw allow 5657/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw reload" "false"
     else
-        execute_task "09" "Opening Required Ports" "iptables -A INPUT -p tcp --dport 8080 -j ACCEPT && iptables -A INPUT -p tcp --dport 5657 -j ACCEPT" "dots"
+        echo -e "  ${YELLOW}⚠ Firewall (UFW) not installed${RESET}"
+        echo -e "  ${BLUE}ℹ Consider installing UFW for better security${RESET}"
     fi
-    current_step=$((current_step + 1))
     
-    # 5. ADMIN ACCOUNT SETUP
-    show_progress $current_step $total_steps
-    console "\n"
-    print_header_line
-    console "  ${CYAN}👤 ADMINISTRATOR ACCOUNT SETUP${RESET}"
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}Please enter admin credentials:${RESET}"
-    console ""
+    print_line
     
-    local admin_email admin_name admin_pass
+    # 8. ADMIN USER CREATION
+    echo ""
+    echo -e "${CYAN}  👑 ADMINISTRATOR ACCOUNT SETUP ${RESET}"
+    echo -e "${WHITE}  Please provide details for the main administrator:${RESET}"
+    print_line
     
-    # Get email
     while true; do
-        console -ne "  ${BLUE}│${RESET} ${WHITE}📧 Admin Email Address: ${RESET}"
-        console_read -r admin_email
+        read -p "  📧 ${WHITE}Email Address: ${RESET}" admin_email
         if [[ "$admin_email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
             break
         else
-            console "  ${RED}│${RESET} ${YELLOW}⚠ Please enter a valid email address${RESET}"
+            echo -e "  ${RED}✗ Invalid email format${RESET}"
         fi
     done
     
-    # Get username
-    console -ne "  ${BLUE}│${RESET} ${WHITE}👤 Admin Username: ${RESET}"
-    console_read -r admin_name
-    
-    # Get password
-    console -ne "  ${BLUE}│${RESET} ${WHITE}🔑 Admin Password: ${RESET}"
-    console_read -s -r admin_pass
-    console ""
-    
-    # Confirm password
-    console -ne "  ${BLUE}│${RESET} ${WHITE}🔒 Confirm Password: ${RESET}"
-    console_read -s -r admin_pass_confirm
-    console ""
-    
-    if [ "$admin_pass" != "$admin_pass_confirm" ]; then
-        console "  ${RED}│${RESET} ${RED_LIGHT}✗ Passwords do not match!${RESET}"
-        return 1
-    fi
-    
-    console "  ${GREEN}│${RESET} ${GREEN}✓ Credentials accepted${RESET}"
-    print_footer_line
-    
-    execute_task "10" "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin" "pulse"
-    current_step=$((current_step + 1))
-    
-    # 6. PANEL URL SETUP
-    show_progress $current_step $total_steps
-    console "\n"
-    print_header_line
-    console "  ${CYAN}🌐 PANEL ACCESS CONFIGURATION${RESET}"
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}Enter your panel access URL or IP address:${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}Examples:${RESET}"
-    console "  ${BLUE}│${RESET}   ${CYAN}• panel.yourdomain.com${RESET}"
-    console "  ${BLUE}│${RESET}   ${CYAN}• 192.168.1.100${RESET}"
-    console "  ${BLUE}│${RESET}   ${CYAN}• server.yourhost.com${RESET}"
-    console "  ${BLUE}│${RESET}   ${CYAN}• localhost${RESET}"
-    console ""
-    
-    local panel_host=""
-    while [ -z "$panel_host" ]; do
-        console -ne "  ${BLUE}│${RESET} ${GREEN}➤ ${WHITE}Panel URL/IP: ${RESET}"
-        console_read -r panel_host
-        if [ -z "$panel_host" ]; then
-            console "  ${RED}│${RESET} ${YELLOW}⚠ Please enter a valid URL or IP address${RESET}"
+    while true; do
+        read -p "  👤 ${WHITE}Username (3-20 chars): ${RESET}" admin_name
+        if [[ "$admin_name" =~ ^[a-zA-Z0-9_]{3,20}$ ]]; then
+            break
+        else
+            echo -e "  ${RED}✗ Invalid username${RESET}"
         fi
     done
     
-    print_footer_line
-    current_step=$((current_step + 1))
+    while true; do
+        read -s -p "  🔑 ${WHITE}Password (min 8 chars): ${RESET}" admin_pass
+        echo ""
+        if [ ${#admin_pass} -ge 8 ]; then
+            read -s -p "  🔑 ${WHITE}Confirm Password: ${RESET}" admin_pass2
+            echo ""
+            if [ "$admin_pass" = "$admin_pass2" ]; then
+                break
+            else
+                echo -e "  ${RED}✗ Passwords don't match${RESET}"
+            fi
+        else
+            echo -e "  ${RED}✗ Password too short${RESET}"
+        fi
+    done
     
-    # 7. FINALIZATION
-    show_progress $current_step $total_steps
-    execute_task "11" "Final System Configuration" "pufferpanel configure && systemctl daemon-reload" "spinner"
-    current_step=$((current_step + 1))
+    execute "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin" "true"
     
-    # INSTALLATION COMPLETE
-    show_progress $current_step $total_steps
-    console "\n"
-    print_header_line
-    console "  ${GREEN}🎉 INSTALLATION COMPLETED SUCCESSFULLY!${RESET}"
-    print_section_line
+    print_line
     
-    # Display system information
-    local ip_address=$(hostname -I | awk '{print $1}')
-    local public_ip=$(curl -s -4 ifconfig.me 2>/dev/null || echo "Not detected")
+    # 9. DOMAIN CONFIGURATION
+    echo ""
+    echo -e "${CYAN}  🌐 NETWORK CONFIGURATION ${RESET}"
+    echo -e "${WHITE}  Enter your panel access URL:${RESET}"
+    echo -e "  ${GRAY}Examples:${RESET}"
+    echo -e "  ${YELLOW}• panel.yourdomain.com${RESET}"
+    echo -e "  ${YELLOW}• 192.168.1.100${RESET}"
+    echo -e "  ${YELLOW}• localhost${RESET}"
+    print_line
     
-    console "  ${BLUE}│${RESET} ${WHITE}📊 INSTALLATION DETAILS${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Local IP:${RESET} ${CYAN}${ip_address}${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Public IP:${RESET} ${CYAN}${public_ip}${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Hostname:${RESET} ${CYAN}$(hostname)${RESET}"
+    read -p "  🔗 ${WHITE}Panel URL/IP: ${RESET}" panel_host
     
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}🔗 PANEL ACCESS DETAILS${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Panel URL:${RESET} ${YELLOW}http://${panel_host}:8080${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Alternative URL:${RESET} ${YELLOW}http://${ip_address}:8080${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ SFTP Port:${RESET} ${YELLOW}5657${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Admin User:${RESET} ${GREEN}${admin_name}${RESET}"
-    console "  ${BLUE}│${RESET} ${GRAY}├─ Admin Email:${RESET} ${GREEN}${admin_email}${RESET}"
+    # 10. FINAL SUCCESS DISPLAY
+    clear
+    show_banner
     
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}⚙️  SERVICE STATUS${RESET}"
-    console -ne "  ${BLUE}│${RESET} ${GRAY}├─ PufferPanel:${RESET} "
-    if systemctl is-active --quiet pufferpanel; then
-        console "${GREEN}● ACTIVE${RESET}"
-    else
-        console "${RED}○ INACTIVE${RESET}"
-    fi
+    echo -e "${GREEN}"
+    echo "  ╔══════════════════════════════════════════════════════════════╗"
+    echo "  ║                                                              ║"
+    echo "  ║                    🎉 INSTALLATION COMPLETE 🎉               ║"
+    echo "  ║                                                              ║"
+    echo "  ╚══════════════════════════════════════════════════════════════╝"
+    echo -e "${RESET}"
     
-    console -ne "  ${BLUE}│${RESET} ${GRAY}├─ Docker:${RESET} "
-    if systemctl is-active --quiet docker; then
-        console "${GREEN}● ACTIVE${RESET}"
-    else
-        console "${RED}○ INACTIVE${RESET}"
-    fi
+    echo -e "${CYAN}  📋 INSTALLATION SUMMARY ${RESET}"
+    print_line
+    echo -e "  ${GREEN}┌────────────────────────────────────────────────────────────┐${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}🌐 ${CYAN}Panel URL${WHITE}:    ${YELLOW}http://$panel_host:8080${RESET}           ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}🔌 ${CYAN}SFTP Port${WHITE}:    ${YELLOW}5657${RESET}                              ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}👑 ${CYAN}Admin User${WHITE}:   ${YELLOW}$admin_name${RESET}                      ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}📧 ${CYAN}Admin Email${WHITE}:  ${YELLOW}$admin_email${RESET}                     ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}📂 ${CYAN}Data Path${WHITE}:    ${YELLOW}/var/lib/pufferpanel${RESET}             ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}📜 ${CYAN}Logs Path${WHITE}:    ${YELLOW}$LOG_FILE${RESET}           ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}└────────────────────────────────────────────────────────────┘${RESET}"
     
-    print_section_line
-    console "  ${BLUE}│${RESET} ${WHITE}📋 NEXT STEPS${RESET}"
-    console "  ${BLUE}│${RESET} ${CYAN}1.${RESET} Access panel at: ${YELLOW}http://${panel_host}:8080${RESET}"
-    console "  ${BLUE}│${RESET} ${CYAN}2.${RESET} Login with your admin credentials"
-    console "  ${BLUE}│${RESET} ${CYAN}3.${RESET} Configure your first server"
-    console "  ${BLUE}│${RESET} ${CYAN}4.${RESET} Check firewall if ports are not accessible"
-    console "  ${BLUE}│${RESET} ${CYAN}5.${RESET} Default login: ${GREEN}${admin_name}${RESET} with your password"
+    print_line
+    echo -e "  ${PURPLE}🚀 NEXT STEPS:${RESET}"
+    echo -e "  ${WHITE}1. ${YELLOW}Access your panel at: ${WHITE}http://$panel_host:8080${RESET}"
+    echo -e "  ${WHITE}2. ${YELLOW}Login with your admin credentials${RESET}"
+    echo -e "  ${WHITE}3. ${YELLOW}Add your first game server from the dashboard${RESET}"
+    echo -e "  ${WHITE}4. ${YELLOW}Configure reverse proxy for HTTPS (recommended)${RESET}"
+    print_endline
     
-    print_footer_line
-    console ""
-    console "  ${PURPLE}💫 Thank you for choosing KS Hosting!${RESET}"
-    console ""
-    
-    log_audit "INSTALLATION COMPLETED - Panel: ${panel_host}:8080"
+    echo -e "  ${MAGENTA}💫 Thank you for choosing KS HOSTING Professional!${RESET}"
+    echo ""
 }
 
 # ==============================================================================
-#  🗑️ PROFESSIONAL UNINSTALL PROCESS
+#  🗑️ UNINSTALL PROCESS
 # ==============================================================================
 uninstall_panel() {
-    console "\n"
-    print_header_line
-    console "  ${RED}⚠️  DANGER: COMPLETE UNINSTALLATION${RESET}"
-    print_section_line
-    console "  ${RED}│${RESET} ${WHITE}This action will:${RESET}"
-    console "  ${RED}│${RESET} ${YELLOW}• Remove PufferPanel completely${RESET}"
-    console "  ${RED}│${RESET} ${YELLOW}• Delete ALL server data${RESET}"
-    console "  ${RED}│${RESET} ${YELLOW}• Remove configurations${RESET}"
-    console "  ${RED}│${RESET} ${YELLOW}• Clean up all related files${RESET}"
-    print_section_line
-    console ""
+    show_banner
     
-    console -ne "  ${RED}│${RESET} ${WHITE}Type ${RED}CONFIRM${WHITE} to proceed: ${RESET}"
-    console_read -r confirmation
+    echo -e "${RED}"
+    echo "  ╔══════════════════════════════════════════════════════════════╗"
+    echo "  ║                                                              ║"
+    echo "  ║                    ⚠️  D A N G E R  Z O N E ⚠️               ║"
+    echo "  ║                                                              ║"
+    echo "  ╚══════════════════════════════════════════════════════════════╝"
+    echo -e "${RESET}"
     
-    if [ "$confirmation" != "CONFIRM" ]; then
-        console "\n  ${GREEN}✓ Uninstallation cancelled${RESET}"
+    echo -e "${ORANGE}  ⚠  This action will:${RESET}"
+    echo -e "  ${RED}• Remove all game servers${RESET}"
+    echo -e "  ${RED}• Delete all user accounts${RESET}"
+    echo -e "  ${RED}• Erase all configurations${RESET}"
+    echo -e "  ${RED}• Remove all server data${RESET}"
+    
+    print_line
+    echo -e "  ${WHITE}Type ${RED}'CONFIRM_DESTRUCTION'${WHITE} to proceed:${RESET}"
+    echo -ne "  ${RED}>>> ${RESET}"
+    read confirmation
+    
+    if [ "$confirmation" != "CONFIRM_DESTRUCTION" ]; then
+        echo -e "  ${GREEN}✅ Operation cancelled${RESET}"
         return
     fi
     
-    console ""
-    print_header_line
-    console "  ${RED}🗑️  UNINSTALLATION IN PROGRESS${RESET}"
-    print_footer_line
+    print_line
+    execute "Stopping Services" "systemctl stop pufferpanel"
+    execute "Disabling Services" "systemctl disable pufferpanel"
+    execute "Removing Package" "apt-get purge pufferpanel -y"
+    execute "Cleaning Data" "rm -rf /var/lib/pufferpanel /etc/pufferpanel"
+    execute "Removing Dependencies" "apt-get autoremove -y"
     
-    log_audit "UNINSTALLATION STARTED"
-    
-    local total_steps=6
-    local current_step=1
-    
-    show_progress $current_step $total_steps
-    execute_task "U01" "Stopping Services" "systemctl stop pufferpanel && systemctl disable pufferpanel" "spinner"
-    current_step=$((current_step + 1))
-    
-    show_progress $current_step $total_steps
-    execute_task "U02" "Removing PufferPanel" "apt-get purge pufferpanel -y" "dots"
-    current_step=$((current_step + 1))
-    
-    show_progress $current_step $total_steps
-    execute_task "U03" "Cleaning Package Files" "apt-get autoremove -y && apt-get autoclean -y" "pulse"
-    current_step=$((current_step + 1))
-    
-    show_progress $current_step $total_steps
-    execute_task "U04" "Removing Data Directories" "rm -rf /var/lib/pufferpanel /etc/pufferpanel /usr/share/pufferpanel" "spinner"
-    current_step=$((current_step + 1))
-    
-    show_progress $current_step $total_steps
     if command -v ufw > /dev/null; then
-        execute_task "U05" "Closing Firewall Ports" "ufw delete allow 8080/tcp && ufw delete allow 5657/tcp && ufw reload" "dots"
+        execute "Resetting Firewall" "ufw delete allow 8080/tcp && ufw delete allow 5657/tcp && ufw reload"
     fi
-    current_step=$((current_step + 1))
     
-    show_progress $current_step $total_steps
-    execute_task "U06" "Final Cleanup" "rm -f /etc/apt/sources.list.d/pufferpanel.list /etc/apt/trusted.gpg.d/pufferpanel.gpg" "pulse"
-    
-    console "\n"
-    print_header_line
-    console "  ${GREEN}✓ UNINSTALLATION COMPLETED${RESET}"
-    print_section_line
-    console "  ${GREEN}│${RESET} ${WHITE}All components have been removed successfully${RESET}"
-    console "  ${GREEN}│${RESET} ${CYAN}Recommended:${RESET} Reboot your system to complete cleanup"
-    print_footer_line
-    
-    log_audit "UNINSTALLATION COMPLETED"
+    echo ""
+    echo -e "${GREEN}  ✅ PufferPanel has been completely removed from your system${RESET}"
+    echo -e "${YELLOW}  📝 Note: Game server files might still exist in user directories${RESET}"
 }
 
 # ==============================================================================
-#  📊 SYSTEM STATUS CHECK
+#  📊 STATUS CHECK
 # ==============================================================================
-system_status() {
-    console "\n"
-    print_header_line
-    console "  ${CYAN}📊 SYSTEM STATUS CHECK${RESET}"
-    print_section_line
-    
-    # Panel Status
-    console -ne "  ${BLUE}│${RESET} ${WHITE}PufferPanel:${RESET} "
-    if systemctl is-active --quiet pufferpanel; then
-        console "${GREEN}● RUNNING${RESET}"
-        local panel_version=$(pufferpanel version 2>/dev/null || echo "Unknown")
-        console "  ${BLUE}│${RESET}   ${GRAY}Version:${RESET} ${CYAN}${panel_version}${RESET}"
-    else
-        console "${RED}○ STOPPED${RESET}"
-    fi
-    
-    # Docker Status
-    console -ne "  ${BLUE}│${RESET} ${WHITE}Docker Service:${RESET} "
-    if systemctl is-active --quiet docker; then
-        console "${GREEN}● RUNNING${RESET}"
-        local docker_version=$(docker --version | cut -d' ' -f3 | cut -d',' -f1)
-        console "  ${BLUE}│${RESET}   ${GRAY}Version:${RESET} ${CYAN}${docker_version}${RESET}"
-    else
-        console "${RED}○ STOPPED${RESET}"
-    fi
-    
-    # Port Status
-    console "  ${BLUE}│${RESET} ${WHITE}Port Status:${RESET}"
-    console -ne "  ${BLUE}│${RESET}   ${GRAY}Port 8080 (Panel):${RESET} "
-    if ss -tuln | grep -q ':8080'; then
-        console "${GREEN}● LISTENING${RESET}"
-    else
-        console "${RED}○ CLOSED${RESET}"
-    fi
-    
-    console -ne "  ${BLUE}│${RESET}   ${GRAY}Port 5657 (SFTP):${RESET} "
-    if ss -tuln | grep -q ':5657'; then
-        console "${GREEN}● LISTENING${RESET}"
-    else
-        console "${RED}○ CLOSED${RESET}"
-    fi
-    
-    # Resource Usage
-    console "  ${BLUE}│${RESET} ${WHITE}Resource Usage:${RESET}"
-    local mem_usage=$(free -m | awk '/^Mem:/{printf "%.1f%%", $3/$2*100}')
-    local disk_usage=$(df -h / | awk 'NR==2{print $5}')
-    local load=$(uptime | awk -F'load average:' '{print $2}')
-    
-    console "  ${BLUE}│${RESET}   ${GRAY}Memory:${RESET} ${CYAN}${mem_usage}${RESET}"
-    console "  ${BLUE}│${RESET}   ${GRAY}Disk (/):${RESET} ${CYAN}${disk_usage}${RESET}"
-    console "  ${BLUE}│${RESET}   ${GRAY}Load Avg:${RESET} ${CYAN}${load}${RESET}"
-    
-    print_footer_line
-}
-
-# ==============================================================================
-#  🔧 RESTART SERVICES
-# ==============================================================================
-restart_services() {
-    console "\n"
-    print_header_line
-    console "  ${PURPLE}🛠️  RESTARTING SERVICES${RESET}"
-    print_section_line
-    
-    execute_task "RS1" "Restarting PufferPanel" "systemctl restart pufferpanel" "spinner"
-    execute_task "RS2" "Restarting Docker" "systemctl restart docker" "dots"
-    
-    console "\n  ${GREEN}✓ Services restarted successfully${RESET}"
-    print_footer_line
-}
-
-# ==============================================================================
-#  🎮 PROFESSIONAL MAIN MENU
-# ==============================================================================
-main_menu() {
-    # Show KS Hosting intro first (with animation)
-    show_intro
-    sleep 1
-    
-    # Then show banner
+check_status() {
     show_banner
     
-    # Then show system check
-    check_system
+    echo -e "${CYAN}  📊 SYSTEM STATUS CHECK ${RESET}"
+    print_line
     
+    # Check PufferPanel service
+    if systemctl is-active --quiet pufferpanel; then
+        echo -e "  ${GREEN}✅ ${WHITE}PufferPanel Service: ${GREEN}RUNNING${RESET}"
+    else
+        echo -e "  ${RED}❌ ${WHITE}PufferPanel Service: ${RED}STOPPED${RESET}"
+    fi
+    
+    # Check Docker
+    if systemctl is-active --quiet docker; then
+        echo -e "  ${GREEN}✅ ${WHITE}Docker Service: ${GREEN}RUNNING${RESET}"
+    else
+        echo -e "  ${RED}❌ ${WHITE}Docker Service: ${RED}STOPPED${RESET}"
+    fi
+    
+    # Check ports
+    echo -e "  ${BLUE}🔍 ${WHITE}Port Check:${RESET}"
+    if ss -tulpn | grep -q ":8080"; then
+        echo -e "    ${GREEN}✓ Port 8080 (Panel): ${GREEN}LISTENING${RESET}"
+    else
+        echo -e "    ${RED}✗ Port 8080 (Panel): ${RED}CLOSED${RESET}"
+    fi
+    
+    if ss -tulpn | grep -q ":5657"; then
+        echo -e "    ${GREEN}✓ Port 5657 (SFTP): ${GREEN}LISTENING${RESET}"
+    else
+        echo -e "    ${RED}✗ Port 5657 (SFTP): ${RED}CLOSED${RESET}"
+    fi
+    
+    # Disk usage
+    disk_usage=$(df -h /var/lib/pufferpanel 2>/dev/null | tail -1 | awk '{print $5}')
+    if [ ! -z "$disk_usage" ]; then
+        echo -e "  ${BLUE}💾 ${WHITE}Disk Usage: ${YELLOW}$disk_used${RESET}"
+    fi
+    
+    print_endline
+    echo ""
+}
+
+# ==============================================================================
+#  🎮 MAIN MENU
+# ==============================================================================
+main_menu() {
     while true; do
-        console ""
-        print_header_line
-        console "  ${WHITE}📋 MAIN MENU - Select an action${RESET}"
-        print_section_line
-        console "  ${CYAN}│${RESET} ${GREEN}[1] 🚀${RESET} ${BOLD}Install PufferPanel${RESET} ${GRAY}(Recommended)${RESET}"
-        console "  ${CYAN}│${RESET} ${RED}[2] 🗑️${RESET} ${BOLD}Uninstall PufferPanel${RESET} ${GRAY}(Danger Zone)${RESET}"
-        console "  ${CYAN}│${RESET} ${BLUE}[3] 📊${RESET} ${BOLD}System Status${RESET} ${GRAY}(Check Services)${RESET}"
-        console "  ${CYAN}│${RESET} ${PURPLE}[4] 🛠️${RESET} ${BOLD}Restart Services${RESET} ${GRAY}(Panel & Docker)${RESET}"
-        console "  ${CYAN}│${RESET} ${YELLOW}[5] 🚪${RESET} ${BOLD}Exit${RESET} ${GRAY}(Close Script)${RESET}"
-        print_section_line
-        console -ne "  ${CYAN}│${RESET} ${WHITE}👉 Your choice [1-5]: ${RESET}"
+        show_banner
         
-        console_read -r choice
+        echo -e "${WHITE}  📋 MAIN MENU ${RESET}"
+        print_line
+        echo -e "  ${GREEN}[1] 🚀 ${CYAN}Install PufferPanel (Complete Setup)${RESET}"
+        echo -e "  ${BLUE}[2] 📊 ${CYAN}Check System Status${RESET}"
+        echo -e "  ${YELLOW}[3] ⚙️  ${CYAN}Update Panel${RESET}"
+        echo -e "  ${RED}[4] 🗑️  ${CYAN}Uninstall Panel${RESET}"
+        echo -e "  ${MAGENTA}[5] ℹ️  ${CYAN}About & Support${RESET}"
+        echo -e "  ${GRAY}[6] 🚪 ${CYAN}Exit${RESET}"
+        print_endline
+        
+        echo -ne "  ${WHITE}🎮 Select option [1-6]: ${RESET}"
+        read -n 1 choice
+        echo ""
         
         case $choice in
             1)
                 install_panel
                 ;;
             2)
-                uninstall_panel
+                check_status
                 ;;
             3)
-                system_status
+                echo -e "  ${CYAN}🔧 Update feature coming soon...${RESET}"
                 ;;
             4)
-                restart_services
+                uninstall_panel
                 ;;
             5)
-                console "\n"
-                print_header_line
-                console "  ${CYAN}👋 Thank you for using KS Hosting!${RESET}"
-                print_section_line
-                console "  ${BLUE}│${RESET} ${WHITE}Need help?${RESET} Check our documentation or contact support"
-                console "  ${BLUE}│${RESET} ${GRAY}Logs saved to:${RESET} ${CYAN}${LOG_FILE}${RESET}"
-                print_footer_line
-                console ""
+                echo -e "  ${CYAN}📞 Support information coming soon...${RESET}"
+                ;;
+            6)
+                echo -e "  ${GREEN}👋 Thank you for using KS HOSTING!${RESET}"
+                echo ""
                 exit 0
                 ;;
             *)
-                console "\n  ${RED}✗ Invalid selection. Please choose 1-5${RESET}"
+                echo -e "  ${RED}❌ Invalid selection${RESET}"
                 ;;
         esac
         
-        if [ "$choice" -ne 5 ]; then
-            console "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
-            console_read
+        if [ "$choice" != "6" ]; then
+            echo -e "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
+            read
         fi
     done
 }
 
 # ==============================================================================
-#  🚀 SCRIPT ENTRY POINT
+#  🏁 ENTRY POINT
 # ==============================================================================
 
-# Trap for cleanup on exit
-trap 'console "\n${RED}Script interrupted. Cleaning up...${RESET}"; exit 1' INT TERM
+# Initial checks
+check_root
+trap "echo -e '\n${RED}❌ Script interrupted${RESET}'; exit 1" SIGINT
 
-# Start the application
+# Start main menu
 main_menu
-
-# Restore original descriptors
-exec 1>&3
-exec 2>&4
