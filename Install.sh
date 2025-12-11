@@ -2,7 +2,7 @@
 
 # ==============================================================================
 #  ⚡ KS HOSTING - ULTIMATE PUFFERPANEL MANAGER ⚡
-#  Version: 2.1 | Author: KSGAMING | License: MIT
+#  Version: 2.2 | Author: KSGAMING | License: MIT
 # ==============================================================================
 
 # 🎨 COLOR PALETTE
@@ -20,46 +20,47 @@ ORANGE='\033[38;5;208m'
 PURPLE='\033[38;5;93m'
 LIME='\033[38;5;154m'
 
-# 📁 LOGGING SETUP
+# 📁 LOGGING
 LOG_FILE="/var/log/kshosting_install.log"
 exec 3>&1
 
-# 🌈 GRADIENT TEXT EFFECT
-gradient() {
+# 🌈 BANNER
+show_banner() {
+    clear
+    echo ""
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════╗${RESET}"
     echo -e "${BLUE}║    ⚡ ${PURPLE}K S   H O S T I N G   P R O F E S S I O N A L ⚡    ${BLUE}║${RESET}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════╝${RESET}"
+    echo ""
+    echo -e "  ${WHITE}🏆 Ultimate Game Server Management Platform${RESET}"
+    echo -e "  ${YELLOW}✨ Version 2.2 | Professional Edition ✨${RESET}"
+    echo ""
 }
 
-# 📏 SEPARATOR LINE FUNCTION
+# 📏 LINES
 print_line() {
-    echo -e "${PURPLE}┌────────────────────────────────────────────────────────────┐${RESET}"
+    echo -e "${PURPLE}──────────────────────────────────────────────────────────────${RESET}"
 }
 
-print_endline() {
-    echo -e "${PURPLE}└────────────────────────────────────────────────────────────┘${RESET}"
-}
-
-# 🔄 SPINNER ANIMATION FUNCTION
+# 🔄 SPINNER
 spinner() {
     local pid=$1
     local delay=0.1
-    local spin_chars=("🕐" "🕑" "🕒" "🕓" "🕔" "🕕" "🕖" "🕗" "🕘" "🕙" "🕚" "🕛")
+    local spin_chars=("⣾" "⣽" "⣻" "⢿" "⡿" "⣟" "⣯" "⣷")
     local i=0
     
     while kill -0 $pid 2>/dev/null; do
         echo -ne "\r  ${spin_chars[$i]} ${YELLOW}Processing...${RESET}"
-        i=$(((i + 1) % 12))
+        i=$(((i + 1) % 8))
         sleep $delay
     done
     echo -ne "\r\033[K"
 }
 
-# ✅ EXECUTE WITH ANIMATION
+# ✅ EXECUTE
 execute() {
     local message="$1"
     local command="$2"
-    local critical="${3:-false}"
     
     echo -ne "  ${BLUE}➤${RESET} ${WHITE}${message}${RESET}"
     
@@ -67,373 +68,245 @@ execute() {
     local pid=$!
     
     spinner $pid
-    
     wait $pid
-    local exit_code=$?
     
-    if [ $exit_code -eq 0 ]; then
-        echo -e "\r  ${GREEN}✓${RESET} ${LIME}${message} ${GREEN}SUCCESS${RESET}"
+    if [ $? -eq 0 ]; then
+        echo -e "\r  ${GREEN}✓${RESET} ${LIME}${message} ${GREEN}Done${RESET}"
     else
-        echo -e "\r  ${RED}✗${RESET} ${RED}${message} ${ORANGE}FAILED${RESET}"
-        if [ "$critical" = "true" ]; then
-            echo -e "  ${RED}⚠  CRITICAL ERROR - Installation cannot continue${RESET}"
-            echo -e "  ${YELLOW}📋 Check log: ${WHITE}$LOG_FILE${RESET}"
-            exit 1
-        fi
+        echo -e "\r  ${RED}✗${RESET} ${RED}${message} ${ORANGE}Failed${RESET}"
     fi
-}
-
-# 🖼️ DYNAMIC BANNER
-show_banner() {
-    clear
-    echo ""
-    gradient
-    echo ""
-    echo -e "  ${WHITE}┌────────────────────────────────────────────────────────────┐${RESET}"
-    echo -e "  ${WHITE}│     ${CYAN}🏆 ${PURPLE}Ultimate Game Server Management Platform ${CYAN}🏆     ${WHITE}│${RESET}"
-    echo -e "  ${WHITE}│     ${YELLOW}✨ Version 2.1 | Professional Edition ✨      ${WHITE}│${RESET}"
-    echo -e "  ${WHITE}└────────────────────────────────────────────────────────────┘${RESET}"
-    echo ""
 }
 
 # 🛡️ ROOT CHECK
-check_root() {
-    if [ "$(id -u)" != "0" ]; then
-        echo -e "${RED}"
-        echo "  ╔══════════════════════════════════════════════════╗"
-        echo "  ║                                                    ║"
-        echo "  ║  🔒 ${WHITE}P E R M I S S I O N   D E N I E D 🔒      ${RED}║"
-        echo "  ║                                                    ║"
-        echo "  ║  This script requires ${YELLOW}root privileges${RED}         ║"
-        echo "  ║  Please run with: ${WHITE}sudo ./install.sh${RED}            ║"
-        echo "  ║                                                    ║"
-        echo "  ╚══════════════════════════════════════════════════╝"
-        echo -e "${RESET}"
-        exit 1
-    fi
-}
-
-# 🔍 SYSTEM CHECK
-system_check() {
-    echo -e "${CYAN}"
-    echo "  📊 SYSTEM ANALYSIS"
-    echo -e "${WHITE}"
-    print_line
-    
-    # Check OS
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        echo -e "  ${GREEN}✓${RESET} ${WHITE}OS:${RESET} ${YELLOW}$PRETTY_NAME${RESET}"
-    else
-        echo -e "  ${YELLOW}⚠${RESET} ${WHITE}OS:${RESET} ${ORANGE}Unknown Linux Distribution${RESET}"
-    fi
-    
-    # Check RAM
-    total_ram=$(free -h | awk '/^Mem:/ {print $2}')
-    echo -e "  ${GREEN}✓${RESET} ${WHITE}RAM:${RESET} ${YELLOW}$total_ram${RESET}"
-    
-    # Check Disk Space
-    disk_space=$(df -h / | awk 'NR==2 {print $4}')
-    echo -e "  ${GREEN}✓${RESET} ${WHITE}Disk:${RESET} ${YELLOW}$disk_space free${RESET}"
-    
-    print_endline
-    echo ""
-}
+if [ "$(id -u)" != "0" ]; then
+    echo -e "${RED}"
+    echo "  ╔══════════════════════════════════════════════════╗"
+    echo "  ║                                                    ║"
+    echo "  ║  🔒 Permission Denied! 🔒                          ║"
+    echo "  ║                                                    ║"
+    echo "  ║  Please run as root: ${WHITE}sudo ./install.sh${RED}            ║"
+    echo "  ║                                                    ║"
+    echo "  ╚══════════════════════════════════════════════════╝"
+    echo -e "${RESET}"
+    exit 1
+fi
 
 # ==============================================================================
-#  🚀 INSTALLATION PROCESS
+#  🚀 INSTALL PANEL
 # ==============================================================================
 install_panel() {
     show_banner
-    system_check
-    
-    echo -e "${CYAN}  🚀 STARTING PROFESSIONAL INSTALLATION ${RESET}"
-    echo -e "${GRAY}  📝 Log file: ${WHITE}$LOG_FILE${RESET}"
+    echo -e "${CYAN}🚀 STARTING INSTALLATION${RESET}"
     print_line
     
-    # 1. SYSTEM UPDATE
-    execute "Updating System Packages" "apt-get update -y && apt-get upgrade -y" "true"
+    execute "Updating System" "apt-get update -y"
+    execute "Installing Tools" "apt-get install -y curl wget git sudo"
     
-    # 2. ESSENTIAL DEPENDENCIES
-    execute "Installing Essential Tools" "apt-get install -y curl wget git sudo gnupg2 ca-certificates apt-transport-https software-properties-common" "true"
-    
-    # 3. DOCKER INSTALLATION
     if ! command -v docker > /dev/null; then
-        execute "Installing Docker Engine" "curl -fsSL https://get.docker.com | sh" "true"
-        execute "Starting Docker Service" "systemctl enable --now docker" "true"
-        execute "Testing Docker" "docker run hello-world --quiet" "false"
+        execute "Installing Docker" "curl -fsSL https://get.docker.com | sh"
+        execute "Starting Docker" "systemctl enable --now docker"
     else
         echo -e "  ${GREEN}🎯 Docker already installed${RESET}"
-        docker_version=$(docker --version | cut -d' ' -f3 | tr -d ',')
-        echo -e "  ${BLUE}ℹ Version: ${WHITE}$docker_version${RESET}"
     fi
     
     print_line
+    execute "Adding PufferPanel" "curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | bash"
+    execute "Installing Panel" "apt-get install pufferpanel -y"
+    execute "Starting Service" "systemctl enable --now pufferpanel"
     
-    # 4. PUFFERPANEL REPOSITORY
-    execute "Adding PufferPanel Repository" "curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | bash" "true"
-    
-    # 5. PANEL INSTALLATION
-    execute "Installing PufferPanel Core" "apt-get install pufferpanel -y" "true"
-    
-    # 6. SERVICE CONFIGURATION
-    execute "Configuring Panel Service" "systemctl enable --now pufferpanel" "true"
-    
-    # 7. FIREWALL CONFIGURATION
     if command -v ufw > /dev/null; then
-        execute "Configuring Firewall Rules" "ufw allow 8080/tcp && ufw allow 5657/tcp && ufw allow 80/tcp && ufw allow 443/tcp && ufw reload" "false"
-    else
-        echo -e "  ${YELLOW}⚠ Firewall (UFW) not installed${RESET}"
-        echo -e "  ${BLUE}ℹ Consider installing UFW for better security${RESET}"
+        execute "Setting Firewall" "ufw allow 8080/tcp && ufw allow 5657/tcp && ufw reload"
     fi
     
     print_line
-    
-    # 8. ADMIN USER CREATION
     echo ""
-    echo -e "${CYAN}  👑 ADMINISTRATOR ACCOUNT SETUP ${RESET}"
-    echo -e "${WHITE}  Please provide details for the main administrator:${RESET}"
+    echo -e "${CYAN}👑 CREATE ADMIN ACCOUNT${RESET}"
     print_line
     
-    while true; do
-        read -p "  📧 ${WHITE}Email Address: ${RESET}" admin_email
-        if [[ "$admin_email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
-            break
-        else
-            echo -e "  ${RED}✗ Invalid email format${RESET}"
-        fi
-    done
-    
-    while true; do
-        read -p "  👤 ${WHITE}Username (3-20 chars): ${RESET}" admin_name
-        if [[ "$admin_name" =~ ^[a-zA-Z0-9_]{3,20}$ ]]; then
-            break
-        else
-            echo -e "  ${RED}✗ Invalid username${RESET}"
-        fi
-    done
-    
-    while true; do
-        read -s -p "  🔑 ${WHITE}Password (min 8 chars): ${RESET}" admin_pass
-        echo ""
-        if [ ${#admin_pass} -ge 8 ]; then
-            read -s -p "  🔑 ${WHITE}Confirm Password: ${RESET}" admin_pass2
-            echo ""
-            if [ "$admin_pass" = "$admin_pass2" ]; then
-                break
-            else
-                echo -e "  ${RED}✗ Passwords don't match${RESET}"
-            fi
-        else
-            echo -e "  ${RED}✗ Password too short${RESET}"
-        fi
-    done
-    
-    execute "Creating Admin Account" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin" "true"
-    
-    print_line
-    
-    # 9. DOMAIN CONFIGURATION
+    read -p "  📧 Email: " admin_email
+    read -p "  👤 Username: " admin_name
+    read -s -p "  🔑 Password: " admin_pass
     echo ""
-    echo -e "${CYAN}  🌐 NETWORK CONFIGURATION ${RESET}"
-    echo -e "${WHITE}  Enter your panel access URL:${RESET}"
-    echo -e "  ${GRAY}Examples:${RESET}"
-    echo -e "  ${YELLOW}• panel.yourdomain.com${RESET}"
-    echo -e "  ${YELLOW}• 192.168.1.100${RESET}"
-    echo -e "  ${YELLOW}• localhost${RESET}"
+    
+    execute "Creating Admin" "pufferpanel user add --email \"$admin_email\" --name \"$admin_name\" --password \"$admin_pass\" --admin"
+    
+    print_line
+    echo ""
+    echo -e "${CYAN}🌐 PANEL ACCESS${RESET}"
+    echo -e "  ${GRAY}Enter your server IP or domain${RESET}"
+    echo -e "  ${GRAY}Example: panel.myserver.com or 192.168.1.100${RESET}"
     print_line
     
-    read -p "  🔗 ${WHITE}Panel URL/IP: ${RESET}" panel_host
+    read -p "  🔗 URL/IP: " panel_host
     
-    # 10. FINAL SUCCESS DISPLAY
     clear
     show_banner
-    
     echo -e "${GREEN}"
-    echo "  ╔══════════════════════════════════════════════════════════════╗"
-    echo "  ║                                                              ║"
-    echo "  ║                    🎉 INSTALLATION COMPLETE 🎉               ║"
-    echo "  ║                                                              ║"
-    echo "  ╚══════════════════════════════════════════════════════════════╝"
+    echo "  ╔══════════════════════════════════════════════════════╗"
+    echo "  ║                                                      ║"
+    echo "  ║               🎉 INSTALLATION COMPLETE 🎉            ║"
+    echo "  ║                                                      ║"
+    echo "  ╚══════════════════════════════════════════════════════╝"
     echo -e "${RESET}"
     
-    echo -e "${CYAN}  📋 INSTALLATION SUMMARY ${RESET}"
+    echo -e "${CYAN}📋 YOUR PANEL DETAILS${RESET}"
     print_line
-    echo -e "  ${GREEN}┌────────────────────────────────────────────────────────────┐${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}🌐 ${CYAN}Panel URL${WHITE}:    ${YELLOW}http://$panel_host:8080${RESET}           ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}🔌 ${CYAN}SFTP Port${WHITE}:    ${YELLOW}5657${RESET}                              ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}👑 ${CYAN}Admin User${WHITE}:   ${YELLOW}$admin_name${RESET}                      ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}📧 ${CYAN}Admin Email${WHITE}:  ${YELLOW}$admin_email${RESET}                     ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}📂 ${CYAN}Data Path${WHITE}:    ${YELLOW}/var/lib/pufferpanel${RESET}             ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}│ ${WHITE}📜 ${CYAN}Logs Path${WHITE}:    ${YELLOW}$LOG_FILE${RESET}           ${GREEN}│${RESET}"
-    echo -e "  ${GREEN}└────────────────────────────────────────────────────────────┘${RESET}"
-    
+    echo -e "  ${GREEN}┌────────────────────────────────────────────────────┐${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}🌐 Panel URL:   ${YELLOW}http://$panel_host:8080${RESET}       ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}🔌 SFTP Port:   ${YELLOW}5657${RESET}                          ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}👤 Username:    ${YELLOW}$admin_name${RESET}                  ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}│ ${WHITE}📧 Email:       ${YELLOW}$admin_email${RESET}                 ${GREEN}│${RESET}"
+    echo -e "  ${GREEN}└────────────────────────────────────────────────────┘${RESET}"
     print_line
-    echo -e "  ${PURPLE}🚀 NEXT STEPS:${RESET}"
-    echo -e "  ${WHITE}1. ${YELLOW}Access your panel at: ${WHITE}http://$panel_host:8080${RESET}"
-    echo -e "  ${WHITE}2. ${YELLOW}Login with your admin credentials${RESET}"
-    echo -e "  ${WHITE}3. ${YELLOW}Add your first game server from the dashboard${RESET}"
-    echo -e "  ${WHITE}4. ${YELLOW}Configure reverse proxy for HTTPS (recommended)${RESET}"
-    print_endline
     
-    echo -e "  ${MAGENTA}💫 Thank you for choosing KS HOSTING Professional!${RESET}"
+    echo -e "  ${MAGENTA}💫 Thank you for choosing KS HOSTING!${RESET}"
     echo ""
 }
 
 # ==============================================================================
-#  🗑️ UNINSTALL PROCESS
+#  🗑️ EASY DELETE
 # ==============================================================================
-uninstall_panel() {
+delete_panel() {
     show_banner
     
     echo -e "${RED}"
-    echo "  ╔══════════════════════════════════════════════════════════════╗"
-    echo "  ║                                                              ║"
-    echo "  ║                    ⚠️  D A N G E R  Z O N E ⚠️               ║"
-    echo "  ║                                                              ║"
-    echo "  ╚══════════════════════════════════════════════════════════════╝"
+    echo "  ╔══════════════════════════════════════════════════════╗"
+    echo "  ║                                                      ║"
+    echo "  ║                🗑️  REMOVE PANEL 🗑️                  ║"
+    echo "  ║                                                      ║"
+    echo "  ╚══════════════════════════════════════════════════════╝"
     echo -e "${RESET}"
     
-    echo -e "${ORANGE}  ⚠  This action will:${RESET}"
-    echo -e "  ${RED}• Remove all game servers${RESET}"
-    echo -e "  ${RED}• Delete all user accounts${RESET}"
-    echo -e "  ${RED}• Erase all configurations${RESET}"
-    echo -e "  ${RED}• Remove all server data${RESET}"
+    echo -e "${ORANGE}⚠️  WARNING: This will remove:${RESET}"
+    echo -e "  ${RED}• All game servers${RESET}"
+    echo -e "  ${RED}• All user accounts${RESET}"
+    echo -e "  ${RED}• All settings${RESET}"
+    echo -e "  ${RED}• All server files${RESET}"
     
     print_line
-    echo -e "  ${WHITE}Type ${RED}'CONFIRM_DESTRUCTION'${WHITE} to proceed:${RESET}"
-    echo -ne "  ${RED}>>> ${RESET}"
-    read confirmation
     
-    if [ "$confirmation" != "CONFIRM_DESTRUCTION" ]; then
-        echo -e "  ${GREEN}✅ Operation cancelled${RESET}"
+    echo -e "${YELLOW}❓ Are you sure? (y/N): ${RESET}"
+    echo -ne "  ${RED}>>> ${RESET}"
+    read -n 1 confirm_delete
+    echo ""
+    
+    if [[ ! "$confirm_delete" =~ ^[Yy]$ ]]; then
+        echo -e "  ${GREEN}✅ Delete cancelled${RESET}"
         return
     fi
     
     print_line
-    execute "Stopping Services" "systemctl stop pufferpanel"
-    execute "Disabling Services" "systemctl disable pufferpanel"
-    execute "Removing Package" "apt-get purge pufferpanel -y"
-    execute "Cleaning Data" "rm -rf /var/lib/pufferpanel /etc/pufferpanel"
-    execute "Removing Dependencies" "apt-get autoremove -y"
     
-    if command -v ufw > /dev/null; then
-        execute "Resetting Firewall" "ufw delete allow 8080/tcp && ufw delete allow 5657/tcp && ufw reload"
-    fi
+    # Simple one-liner removal
+    echo -e "  ${BLUE}🗑️  Removing PufferPanel...${RESET}"
+    
+    # Stop and disable service
+    systemctl stop pufferpanel 2>/dev/null
+    systemctl disable pufferpanel 2>/dev/null
+    
+    # Remove package
+    apt-get remove --purge pufferpanel -y 2>/dev/null
+    
+    # Clean up files
+    rm -rf /var/lib/pufferpanel 2>/dev/null
+    rm -rf /etc/pufferpanel 2>/dev/null
+    
+    # Clean firewall
+    ufw delete allow 8080/tcp 2>/dev/null
+    ufw delete allow 5657/tcp 2>/dev/null
+    ufw reload 2>/dev/null
+    
+    # Remove orphan packages
+    apt-get autoremove -y 2>/dev/null
     
     echo ""
-    echo -e "${GREEN}  ✅ PufferPanel has been completely removed from your system${RESET}"
-    echo -e "${YELLOW}  📝 Note: Game server files might still exist in user directories${RESET}"
+    print_line
+    echo -e "  ${GREEN}✅ PufferPanel removed successfully!${RESET}"
+    echo -e "  ${YELLOW}📝 Note: Your game files in /home might still exist${RESET}"
+    echo ""
 }
 
 # ==============================================================================
-#  📊 STATUS CHECK
+#  📊 CHECK STATUS
 # ==============================================================================
 check_status() {
     show_banner
     
-    echo -e "${CYAN}  📊 SYSTEM STATUS CHECK ${RESET}"
+    echo -e "${CYAN}📊 PANEL STATUS${RESET}"
     print_line
     
-    # Check PufferPanel service
+    # Check service
     if systemctl is-active --quiet pufferpanel; then
-        echo -e "  ${GREEN}✅ ${WHITE}PufferPanel Service: ${GREEN}RUNNING${RESET}"
+        echo -e "  ${GREEN}✅ Panel: RUNNING${RESET}"
     else
-        echo -e "  ${RED}❌ ${WHITE}PufferPanel Service: ${RED}STOPPED${RESET}"
+        echo -e "  ${RED}❌ Panel: STOPPED${RESET}"
     fi
     
     # Check Docker
     if systemctl is-active --quiet docker; then
-        echo -e "  ${GREEN}✅ ${WHITE}Docker Service: ${GREEN}RUNNING${RESET}"
+        echo -e "  ${GREEN}✅ Docker: RUNNING${RESET}"
     else
-        echo -e "  ${RED}❌ ${WHITE}Docker Service: ${RED}STOPPED${RESET}"
+        echo -e "  ${RED}❌ Docker: STOPPED${RESET}"
     fi
     
     # Check ports
-    echo -e "  ${BLUE}🔍 ${WHITE}Port Check:${RESET}"
+    echo -e "  ${BLUE}🔍 Open Ports:${RESET}"
     if ss -tulpn | grep -q ":8080"; then
-        echo -e "    ${GREEN}✓ Port 8080 (Panel): ${GREEN}LISTENING${RESET}"
+        echo -e "    ${GREEN}✓ 8080 (Panel) - OPEN${RESET}"
     else
-        echo -e "    ${RED}✗ Port 8080 (Panel): ${RED}CLOSED${RESET}"
+        echo -e "    ${RED}✗ 8080 (Panel) - CLOSED${RESET}"
     fi
     
     if ss -tulpn | grep -q ":5657"; then
-        echo -e "    ${GREEN}✓ Port 5657 (SFTP): ${GREEN}LISTENING${RESET}"
+        echo -e "    ${GREEN}✓ 5657 (SFTP) - OPEN${RESET}"
     else
-        echo -e "    ${RED}✗ Port 5657 (SFTP): ${RED}CLOSED${RESET}"
+        echo -e "    ${RED}✗ 5657 (SFTP) - CLOSED${RESET}"
     fi
     
-    # Disk usage
-    disk_usage=$(df -h /var/lib/pufferpanel 2>/dev/null | tail -1 | awk '{print $5}')
-    if [ ! -z "$disk_usage" ]; then
-        echo -e "  ${BLUE}💾 ${WHITE}Disk Usage: ${YELLOW}$disk_used${RESET}"
-    fi
-    
-    print_endline
+    print_line
     echo ""
 }
 
 # ==============================================================================
 #  🎮 MAIN MENU
 # ==============================================================================
-main_menu() {
-    while true; do
-        show_banner
-        
-        echo -e "${WHITE}  📋 MAIN MENU ${RESET}"
-        print_line
-        echo -e "  ${GREEN}[1] 🚀 ${CYAN}Install PufferPanel (Complete Setup)${RESET}"
-        echo -e "  ${BLUE}[2] 📊 ${CYAN}Check System Status${RESET}"
-        echo -e "  ${YELLOW}[3] ⚙️  ${CYAN}Update Panel${RESET}"
-        echo -e "  ${RED}[4] 🗑️  ${CYAN}Uninstall Panel${RESET}"
-        echo -e "  ${MAGENTA}[5] ℹ️  ${CYAN}About & Support${RESET}"
-        echo -e "  ${GRAY}[6] 🚪 ${CYAN}Exit${RESET}"
-        print_endline
-        
-        echo -ne "  ${WHITE}🎮 Select option [1-6]: ${RESET}"
-        read -n 1 choice
-        echo ""
-        
-        case $choice in
-            1)
-                install_panel
-                ;;
-            2)
-                check_status
-                ;;
-            3)
-                echo -e "  ${CYAN}🔧 Update feature coming soon...${RESET}"
-                ;;
-            4)
-                uninstall_panel
-                ;;
-            5)
-                echo -e "  ${CYAN}📞 Support information coming soon...${RESET}"
-                ;;
-            6)
-                echo -e "  ${GREEN}👋 Thank you for using KS HOSTING!${RESET}"
-                echo ""
-                exit 0
-                ;;
-            *)
-                echo -e "  ${RED}❌ Invalid selection${RESET}"
-                ;;
-        esac
-        
-        if [ "$choice" != "6" ]; then
-            echo -e "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
-            read
-        fi
-    done
-}
-
-# ==============================================================================
-#  🏁 ENTRY POINT
-# ==============================================================================
-
-# Initial checks
-check_root
-trap "echo -e '\n${RED}❌ Script interrupted${RESET}'; exit 1" SIGINT
-
-# Start main menu
-main_menu
+while true; do
+    show_banner
+    
+    echo -e "${WHITE}📋 MAIN MENU${RESET}"
+    print_line
+    echo -e "  ${GREEN}[1] 🚀 Install PufferPanel${RESET}"
+    echo -e "  ${BLUE}[2] 📊 Check Status${RESET}"
+    echo -e "  ${RED}[3] 🗑️  Remove Panel${RESET}"
+    echo -e "  ${GRAY}[4] 🚪 Exit${RESET}"
+    print_line
+    
+    echo -ne "  ${WHITE}👉 Choose [1-4]: ${RESET}"
+    read -n 1 choice
+    echo ""
+    
+    case $choice in
+        1)
+            install_panel
+            ;;
+        2)
+            check_status
+            ;;
+        3)
+            delete_panel
+            ;;
+        4)
+            echo -e "  ${GREEN}👋 Goodbye!${RESET}"
+            echo ""
+            exit 0
+            ;;
+        *)
+            echo -e "  ${RED}❌ Invalid choice${RESET}"
+            ;;
+    esac
+    
+    if [ "$choice" != "4" ]; then
+        echo -e "\n  ${WHITE}Press ${GREEN}[ENTER]${WHITE} to continue...${RESET}"
+        read
+    fi
+done
